@@ -1,0 +1,169 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "type": "string",
+            "allowedValues": [
+                "development",
+                "quality",
+                "production"
+            ],
+            "metadata": {
+                "description": "give the type of environment for this development."
+            }
+        },
+        "solutionName": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 81,
+            "metadata": {
+                "description": "Give a short phrase to describe the content. This will be used for the parts of the resource group name and tagging."
+            }
+        },
+        "costCenter": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 16,
+            "metadata": {
+                "description": "Give the cost center where the costs get billed to."
+            }
+        },
+        "requesterMail": {
+            "type": "string",
+            "metadata": {
+                "description": "Give the mail of the person requesting this resource group."
+            }
+        },
+        "ownerMail": {
+            "type": "string",
+            "metadata": {
+                "description": "Give the mail of the person who is the owner of this resource group. Usually it is a manager, team lead, architect or project manager."
+            }
+        },
+        "KgName": {
+            "type": "string",
+            "metadata": {
+                "description": "give the KG abbreviation where the resource group belongs to."
+            }
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "The Azure location of the data center where the resource group should be created."
+            }
+        },
+        "addDeleteLock": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "If true a deletion lock is added to the resource group."
+            }
+        },
+        "principalIds": {
+            "type": "array",
+            "metadata": {
+                "description": "An array of principal IDs assigned to the role chosen in the parameter 'roleAssignment'. This maps to the ID inside the Active Directory. It can point to a user, service principal, or security group"
+            }
+        },
+        "roleAssignment": {
+            "type": "string",
+            "defaultValue": "Contributor",
+            "allowedValues": [
+                "Reader",
+                "Contributor",
+                "Owner"
+            ],
+            "metadata": {
+                "description": "Permission role that should be assigned to the resource group"
+            }
+        }
+    },
+    "variables": {
+        "Owner": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
+        "Contributor": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
+        "Reader": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]",
+        "RgEnvironmentSuffix": "[if(equals(parameters('environment'),'development'),'DEV',if(equals(parameters('environment'),'quality'),'QUAL','PROD'))]",
+        "resourceGroupName": "[concat('RG_',parameters('solutionName'),'_',variables('RgEnvironmentSuffix'))]"
+    },
+    "resources": [{
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2018-05-01",
+            "location": "[parameters('location')]",
+            "name": "[variables('resourceGroupName')]",
+            "tags": {
+                "CC": "[toLower(parameters('costCenter'))]",
+                "Environment": "[toLower(parameters('environment'))]",
+                "KG": "[toLower(parameters('KgName'))]",
+                "Owner": "[toLower(parameters('ownerMail'))]",
+                "Requester": "[toLower(parameters('requesterMail'))]",
+                "Solution": "[toLower(parameters('solutionName'))]"
+            },
+            "properties": {}
+        },
+        {
+            "apiVersion": "2018-05-01",
+            "name": "[concat('AssignRoles',parameters('principalIds')[copyIndex()])]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[variables('resourceGroupName')]",
+            "dependsOn": [
+                "[variables('resourceGroupName')]"
+            ],
+            "copy":{
+                "name":"multiplePrincipals",
+                "count": "[length(parameters('principalIds'))]"                       
+            },
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Authorization/roleAssignments",
+                            "name": "[guid(parameters('principalIds')[copyIndex()], deployment().name)]",
+                            "apiVersion": "2017-09-01",
+                            "properties": {
+                                "roleDefinitionId": "[variables(parameters('roleAssignment'))]",
+                                "principalId": "[parameters('principalIds')[copyIndex()]]",
+                                "scope": "[concat(subscription().id, '/resourceGroups/', variables('resourceGroupName'))]"
+                            }
+                        }
+                    ]
+                },
+                "parameters": {}
+            }
+        },
+        {
+            "apiVersion": "2018-05-01",
+            "name": "DeleteLock",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[variables('resourceGroupName')]",
+            "dependsOn": [
+                "[variables('resourceGroupName')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "resources": [{
+                            "name": "DontDelete",
+                            "type": "Microsoft.Authorization/locks",
+                            "apiVersion": "2017-04-01",
+                            "properties": {
+                                "level": "CanNotDelete",
+                                "notes": "Prevent deletion of the resourceGroup"
+                            }                            
+                        }
+                    ]
+                },
+                "parameters": {}
+            },
+            "condition": "[parameters('addDeleteLock')]"
+        }
+    ],
+    "outputs": {}
+}

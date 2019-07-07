@@ -1,0 +1,1 @@
+az deployment create -l westeurope --template-file './NewResourceGroup.azuredeploy.json' --parameters '@NewResourceGroup.azuredeploy.parameters.json' --subscription 4b8498ef-f8d3-45cb-9ec3-4bb96b2c4774

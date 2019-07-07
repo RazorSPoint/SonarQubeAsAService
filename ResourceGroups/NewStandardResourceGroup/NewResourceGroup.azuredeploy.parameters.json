@@ -1,0 +1,39 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "value": "development"
+        },
+        "solutionName": {
+            "value": "mytesthere"
+        },
+        "costCenter": {
+            "value": "12345"
+        },
+        "requesterMail": {
+            "value": "sebastian.schuetze@devsdb.com"
+        },
+        "ownerMail": {
+            "value": "sebastian.schuetze@devsdb.com"
+        },
+        "KgName": {
+            "value": "SIS"
+        },
+        "location": {
+            "value": "West Europe"
+        },
+        "principalIds": {
+            "value": [
+                "0fe77660-b4cb-4ae4-a5e6-51b17ae3b9fb",
+                "1a649460-c5e4-44cb-8544-b143cf9a78dc"
+            ]
+        },
+        "addDeleteLock": {
+            "value": true
+        },
+        "roleAssignment": {
+            "value": "Contributor"
+        }
+    }
+}
