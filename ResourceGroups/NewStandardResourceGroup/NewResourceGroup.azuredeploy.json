@@ -47,7 +47,7 @@
                 "description": "give the KG abbreviation where the resource group belongs to."
             }
         },
-        "location": {
+        "rgLocation": {
             "type": "string",
             "metadata": {
                 "description": "The Azure location of the data center where the resource group should be created."
@@ -89,7 +89,7 @@
     "resources": [{
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2018-05-01",
-            "location": "[parameters('location')]",
+            "location": "[parameters('rgLocation')]",
             "name": "[variables('resourceGroupName')]",
             "tags": {
                 "CC": "[toLower(parameters('costCenter'))]",
