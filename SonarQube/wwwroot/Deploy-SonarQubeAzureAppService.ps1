@@ -1,3 +1,14 @@
+param(
+    [string]
+    $SqlServerName,
+    [string]
+    $SqlDatabase,
+    [string]
+    $SqlDatabaseAdmin,
+    [string]
+    $SqlDatabaseAdminPassword
+)
+
 Write-Output 'Copy wwwroot folder'
 xcopy wwwroot ..\wwwroot /Y
 
@@ -37,5 +48,11 @@ if(!$propFile) {
 Write-Output "File found at: $($propFile.FullName)"
 Write-Output "Writing to sonar.properties file"
 $configContents = Get-Content -Path $propFile.FullName -Raw
-$configContents -ireplace '#?sonar.web.port=.+', "sonar.web.port=$port" | Set-Content -Path $propFile.FullName
-$configContents -ireplace '#?sonar.web.port=.+', "sonar.web.port=$port" | Set-Content -Path $propFile.FullName
+$configContents -ireplace '#?sonar.web.port=.+', "sonar.web.port=$port"
+$configContents -ireplace '#?sonar.jdbc.username=.+', "sonar.jdbc.username=$SqlDatabaseAdmin"
+$configContents -ireplace '#?sonar.jdbc.password=.+', "sonar.jdbc.password=$SqlDatabaseAdminPassword"
+
+$connectionString = "jdbc:sqlserver://$SqlServerName.database.windows.net:1433;database=$SqlDatabase;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;"
+$configContents -ireplace '#?sonar.jdbc.url=.+', "sonar.jdbc.url=$connectionString"
+
+$configContents | Set-Content -Path $propFile.FullName

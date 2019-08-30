@@ -1,9 +1,17 @@
 
 param(
 [string]
-$WebsiteName = "mykuduest",
+$WebsiteName,
 [string]
-$ResourceGroupName = "RG_SonarQubeTest02_DEV")
+$SqlServerName,
+[string]
+$SqlDatabase,
+[string]
+$SqlDatabaseAdmin,
+[string]
+$SqlDatabaseAdminPassword,
+[string]
+$ResourceGroupName)
 
 $creds = Invoke-AzResourceAction `
 -ResourceGroupName $ResourceGroupName `
@@ -17,8 +25,9 @@ $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0
 
 $apiBaseUrl = "https://$WebsiteName.scm.azurewebsites.net/api"
 
+$scriptCallString = "$pwd\Deploy-SonarQubeAzureAppService.ps1 -SqlServerName '$SqlServerName' -SqlDatabase '$SqlDatabase' -SqlDatabaseAdmin '$SqlDatabaseAdmin' -SqlDatabaseAdminPassword '$SqlDatabaseAdminPassword'"
 $commandBody = @{
-    command = 'powershell -NoProfile -NoLogo -ExecutionPolicy Unrestricted -Command "& "$pwd\Deploy-SonarQubeAzureAppService.ps1" 2>&1 | echo"'
+    command = "powershell -NoProfile -NoLogo -ExecutionPolicy Unrestricted -Command ""& ""$scriptCallString"" 2>&1 | echo"""
     dir = "site\\wwwroot"
 }
 
