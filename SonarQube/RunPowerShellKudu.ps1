@@ -31,4 +31,5 @@ $commandBody = @{
     dir = "site\\wwwroot"
 }
 
-Invoke-RestMethod -Uri "$apiBaseUrl/command" -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -Method POST -ContentType "application/json" -Body (ConvertTo-Json $commandBody)
+$result = Invoke-RestMethod -Uri "$apiBaseUrl/command" -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -Method POST -ContentType "application/json" -Body (ConvertTo-Json $commandBody)
+$result.Output
