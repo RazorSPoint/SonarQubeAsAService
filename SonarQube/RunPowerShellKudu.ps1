@@ -1,9 +1,12 @@
 
 param(
 [string]
-$WebsiteName)
+$WebsiteName,
+[string]
+$ResourceGroupName)
 
 $creds = Invoke-AzResourceAction `
+-ResourceGroupName $ResourceGroupName
 -ResourceType "Microsoft.Web/sites/config" `
 -ResourceName "$WebsiteName/publishingcredentials" `
 -Action list -ApiVersion 2015-08-01 -Force
