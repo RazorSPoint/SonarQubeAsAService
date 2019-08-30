@@ -21,7 +21,6 @@ param(
     $ResourceGroupName
 )
 
-az account set --subscription $Subscription
 az group create --name $ResourceGroupName --location $Location
 
 az sql server create --name $SqlServerName --resource-group $ResourceGroupName --location $Location --admin-user `"$SqlDatabaseAdmin`" --admin-password `"$SqlDatabaseAdminPassword`"
