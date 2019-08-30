@@ -25,3 +25,16 @@ Write-Output 'Done downloading file'
 Write-Output 'Extracting zip'
 Expand-Archive -Path $outputFile -DestinationPath ..\wwwroot
 Write-Output 'Extraction complete'
+
+$port = $env:HTTP_PLATFORM_PORT
+log("HTTP_PLATFORM_PORT is: $port")
+log('Searching for sonar.properties file')
+$propFile = Get-ChildItem 'sonar.properties' -Recurse
+if(!$propFile) {
+    log("Could not find sonar.properties")
+    exit
+}
+log("File found at: $($propFile.FullName)")
+log("Writing to sonar.properties file")
+$configContents = Get-Content -Path $propFile.FullName -Raw
+$configContents -ireplace '#?sonar.web.port=.+', "sonar.web.port=$port" | Set-Content -Path $propFile.FullName
