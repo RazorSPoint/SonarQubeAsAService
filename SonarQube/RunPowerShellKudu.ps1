@@ -25,11 +25,20 @@ $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0
 
 $apiBaseUrl = "https://$WebsiteName.scm.azurewebsites.net/api"
 
-$scriptCallString = "$pwd\Deploy-SonarQubeAzureAppService.ps1 -SqlServerName '$SqlServerName' -SqlDatabase '$SqlDatabase' -SqlDatabaseAdmin '$SqlDatabaseAdmin' -SqlDatabaseAdminPassword '$SqlDatabaseAdminPassword'"
+$scriptCallString = "& `"`$pwd\Deploy-SonarQubeAzureAppService.ps1`" -SqlServerName `"$SqlServerName`" -SqlDatabase `"$SqlDatabase`" -SqlDatabaseAdmin `"$SqlDatabaseAdmin`" -SqlDatabaseAdminPassword `"$SqlDatabaseAdminPassword`""
 $commandBody = @{
-    command = "powershell -NoProfile -NoLogo -ExecutionPolicy Unrestricted -Command ""& ""$scriptCallString"" 2>&1 | echo"""
+    command = "powershell -NoProfile -NoLogo -ExecutionPolicy Unrestricted -Command `"$scriptCallString 2>&1 | echo`""
     dir = "site\\wwwroot"
 }
 
 $result = Invoke-RestMethod -Uri "$apiBaseUrl/command" -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -Method POST -ContentType "application/json" -Body (ConvertTo-Json $commandBody)
-$result.Output
+
+if($result.Output){
+    $result.Output
+}
+
+if($result.Error){
+    $result.Error
+    throw "An error occured during kudu command execution"
+}
+
