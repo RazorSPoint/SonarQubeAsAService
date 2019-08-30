@@ -31,10 +31,11 @@ $port = $env:HTTP_PLATFORM_PORT
 Write-Output 'Searching for sonar.properties file'
 $propFile = Get-ChildItem 'sonar.properties' -Recurse
 if(!$propFile) {
-    log("Could not find sonar.properties")
+    Write-Output "Could not find sonar.properties"
     exit
 }
 Write-Output "File found at: $($propFile.FullName)"
 Write-Output "Writing to sonar.properties file"
 $configContents = Get-Content -Path $propFile.FullName -Raw
+$configContents -ireplace '#?sonar.web.port=.+', "sonar.web.port=$port" | Set-Content -Path $propFile.FullName
 $configContents -ireplace '#?sonar.web.port=.+', "sonar.web.port=$port" | Set-Content -Path $propFile.FullName

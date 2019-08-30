@@ -1,12 +1,12 @@
 
 param(
 [string]
-$WebsiteName,
+$WebsiteName = "mykuduest",
 [string]
-$ResourceGroupName)
+$ResourceGroupName = "RG_SonarQubeTest02_DEV")
 
 $creds = Invoke-AzResourceAction `
--ResourceGroupName $ResourceGroupName
+-ResourceGroupName $ResourceGroupName `
 -ResourceType "Microsoft.Web/sites/config" `
 -ResourceName "$WebsiteName/publishingcredentials" `
 -Action list -ApiVersion 2015-08-01 -Force
