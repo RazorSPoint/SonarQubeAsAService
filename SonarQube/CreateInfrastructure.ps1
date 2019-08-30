@@ -1,24 +1,24 @@
 param(
     [string]
-    $Location = "West Europe",
+    $Location,
     [string]
-    $SqlServerName = "sqlserv-sonarqubetest",
+    $SqlServerName,
     [string]
-    $SqlDatabase = "sqldb-sonarqubetest",
+    $SqlDatabase,
     [string]
-    $SqlDatabaseAdmin = "sonaradmin",
+    $SqlDatabaseAdmin,
     [string]
-    $SqlDatabaseAdminPassword = "sonar2019!",
+    $SqlDatabaseAdminPassword,
     [string]
-    $DatabaseSku = "S0",
+    $DatabaseSku,
     [string]
-    $AppServicePlanName = "ASP-SonarQubeTest",
+    $AppServicePlanName,
     [string]
-    $AppServiceSku = "S1",
+    $AppServiceSku,
     [string]
-    $AppName = "WA-SonarQubeTest",
+    $AppName,
     [string]
-    $ResourceGroupName = "RG_SonarQubeTest02_DEV"
+    $ResourceGroupName
 )
 
 az account set --subscription $Subscription
