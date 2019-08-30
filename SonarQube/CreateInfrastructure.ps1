@@ -18,10 +18,7 @@ param(
     [string]
     $AppName = "WA-SonarQubeTest",
     [string]
-    $Subscription = "SUBSCR_SIS_DWP_ALM_PROD",
-    [string]
-    $ResourceGroupName = "RG_SonarQubeTest02_DEV",
-
+    $ResourceGroupName = "RG_SonarQubeTest02_DEV"
 )
 
 az account set --subscription $Subscription
