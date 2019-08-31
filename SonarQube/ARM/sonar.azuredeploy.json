@@ -155,32 +155,21 @@
             },
             "properties": {
                 "name": "[parameters('webSiteName')]",
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",
-                "siteConfig": {
-                    "appSettings": [],
-                    "metadata": [{
-                        "name": "CURRENT_STACK",
-                        "value": "java"
-                    }],
-                    "javaVersion": "11",
-                    "javaContainer": "Tomcat",
-                    "javaContainerVersion": "9.0",
-                    "alwaysOn": "[parameters('alwaysOn')]"
-                },
-                "clientAffinityEnabled": true
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",              
+                "clientAffinityEnabled": false
             },
             "resources": [{
-                "apiVersion": "2016-03-01",
+                "name": "web",
                 "type": "config",
-                "name": "connectionstrings",
+                "apiVersion": "2016-08-01",
                 "dependsOn": [
-                    "[parameters('webSiteName')]"
+                    "[resourceId('Microsoft.Web/sites', parameters('webSiteName'))]"
                 ],
                 "properties": {
-                    "DefaultConnection": {
-                        "value": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', parameters('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('databaseName'), ';User Id=', parameters('sqlAdministratorLogin'), '@', reference(concat('Microsoft.Sql/servers/', parameters('sqlserverName'))).fullyQualifiedDomainName, ';Password=', parameters('sqlAdministratorLoginPassword'), ';')]",
-                        "type": "SQLAzure"
-                    }
+                    "alwaysOn": false,
+                    "javaVersion": "11",
+                    "javaContainer": "TOMCAT",
+                    "javaContainerVersion": "9.0"
                 }
             }]
         },
@@ -404,14 +393,6 @@
         "siteUri": {
             "type": "string",
             "value": "[reference(concat('Microsoft.Web/sites/', parameters('webSiteName'))).hostnames[0]]"
-        },
-        "sqlSvrFqdn": {
-            "type": "string",
-            "value": "[reference(concat('Microsoft.Sql/servers/', parameters('sqlserverName'))).fullyQualifiedDomainName]"
-        },
-        "JsbcDatabaseConnectionString": {
-            "type": "string",
-            "value": "[concat('jdbc:sqlserver://',reference(parameters('sqlserverName')).fullyQualifiedDomainName,':1433;database=',parameters('databaseName'),';encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;')]"
-          }
+        }
     }
 }

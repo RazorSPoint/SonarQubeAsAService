@@ -53,4 +53,4 @@ $connectionString = "jdbc:sqlserver://$SqlServerName.database.windows.net:1433;d
     -replace '#SqlConnectionString#', $connectionString
 ) | Set-Content -Path $sonarPropertySource
  
-Move-Item -Path $sonarPropertySource -Destination $sonarPropertyTarget -Force
+#Move-Item -Path $sonarPropertySource -Destination $sonarPropertyTarget -Force
