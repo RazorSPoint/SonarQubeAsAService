@@ -34,21 +34,23 @@ Write-Output 'Extracting zip'
 Expand-Archive -Path $outputFile -DestinationPath ..\wwwroot
 Write-Output 'Extraction complete'
 
-$port = $env:HTTP_PLATFORM_PORT
-
-Write-Output 'Searching for sonar.properties file'
-$propFile = Get-ChildItem 'sonar.properties' -Recurse
-if(!$propFile) {
+Write-Output 'Searching for sonar.properties files to overwrite'
+$propFiles = Get-ChildItem 'sonar.properties' -Recurse
+if(!$propFiles) {
     Write-Output "Could not find sonar.properties"
     exit
 }
-Write-Output "File found at: $($propFile.FullName)"
-Write-Output "Writing to sonar.properties file"
-$configContents = Get-Content -Path $propFile.FullName -Raw
-$configContents = $configContents -ireplace '#?sonar.jdbc.username=.+', "sonar.jdbc.username=$SqlDatabaseAdmin"
-$configContents = $configContents -ireplace '#?sonar.jdbc.password=.+', "sonar.jdbc.password=$SqlDatabaseAdminPassword"
+Write-Output "Files found at: `n $($propFile.FullName)"
+Write-Output "Moving to sonar.properties file"
+
+$sonarPropertySource = $propFiles[1].FullName
+$sonarPropertyTarget = $propFiles[0].FullName
 
 $connectionString = "jdbc:sqlserver://$SqlServerName.database.windows.net:1433;database=$SqlDatabase;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;"
-$configContents = $configContents -ireplace '#?sonar.jdbc.url=.+', "sonar.jdbc.url=$connectionString"
-
-$configContents | Set-Content -Path $propFile.FullName
+((Get-Content -path $sonarPropertySource -Raw) `
+    -replace '#SqlAdmin#',$SqlDatabaseAdmin `
+    -replace '#SqlAdminPassword#', $SqlDatabaseAdminPassword`
+    -replace '#SqlConnectionString#', $connectionString
+) | Set-Content -Path $sonarPropertySource
+ 
+Move-Item -Path $sonarPropertySource -Destination $sonarPropertyTarget -Force
