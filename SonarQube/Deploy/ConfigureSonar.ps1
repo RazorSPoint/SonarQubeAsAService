@@ -19,7 +19,7 @@ function Start-SonarApi{
     [SonarQubeCommon]::BaseUrl = $BaseUrl
 }
 
-function SonarApiCall{
+function Invoke-SonarApiCall{
     param (      
         [string]
         $ApiUrl,
@@ -53,7 +53,7 @@ function Set-SonarSetting{
         $Value
     )
 
-    SonarApiCall -ApiUrl "api/settings/set" -Method POST -Body @{
+    Invoke-SonarApiCall -ApiUrl "api/settings/set" -Method POST -Body @{
         key = $Key
         value = $Value
     }   
@@ -62,19 +62,19 @@ Start-SonarApi -User 'admin' -Password 'admin' -BaseUrl 'https://wa-sonarqubetes
 
 
 # install azure aad plugin
-$availablePlugin = SonarApiCall -ApiUrl "api/plugins/available" -Method Get
+$availablePlugin = Invoke-SonarApiCall -ApiUrl "api/plugins/available" -Method Get
 $aadPlugin = $availablePlugin.plugins | Where-Object { $_.key -eq "authaad" }
 
-SonarApiCall -ApiUrl "api/plugins/install" -Method POST -Body @{
+Invoke-SonarApiCall -ApiUrl "api/plugins/install" -Method POST -Body @{
     key = $aadPlugin.key
 }
 
 #Restart-AzWebApp -ResourceGroupName "Default-Web-WestUS" -Name "ContosoSite"
-#SonarApiCall -ApiUrl "api/system/restart"  -Method POST
+#Invoke-SonarApiCall -ApiUrl "api/system/restart"  -Method POST
 
 $status = $null
 while ($status -ne "pong") {
-    $status = SonarApiCall -ApiUrl "api/system/status" -Method GET
+    $status = Invoke-SonarApiCall -ApiUrl "api/system/status" -Method GET
     Start-Sleep -Seconds 10
 }
 
@@ -90,5 +90,5 @@ Set-SonarSetting -Key "sonar.auth.aad.loginStrategy" -Value "Same as Azure AD lo
 Set-SonarSetting -Key "sonar.auth.aad.enabled" -Value "true"
 
 
-#$definitions = SonarApiCall -ApiUrl "api/settings/list_definitions" -Method GET
+#$definitions = Invoke-SonarApiCall -ApiUrl "api/settings/list_definitions" -Method GET
 
