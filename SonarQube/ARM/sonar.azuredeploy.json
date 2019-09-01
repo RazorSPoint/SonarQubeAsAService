@@ -98,16 +98,15 @@
                     "apiVersion": "2015-01-01",
                     "dependsOn": [
                         "[parameters('sqlserverName')]"
-                    ],
-                    "sku": {
-                        "name": "Standard",
-                        "tier": "Standard",
-                        "capacity": 20
-                      },
+                    ],                   
                     "properties": {
                         "collation": "SQL_Latin1_General_CP1_CS_AS",
-                        "maxSizeBytes": "1073741824"
-                    }
+                        "maxSizeBytes": "268435456000"
+                    },
+                    "sku": {
+                        "name": "S1",
+                        "tier": "Standard"                    
+                    }                    
                 },
                 {
                     "type": "firewallrules",
