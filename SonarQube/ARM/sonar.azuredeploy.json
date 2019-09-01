@@ -100,10 +100,10 @@
                         "[parameters('sqlserverName')]"
                     ],                   
                     "properties": {
-                        "edition": "Basic",
+                        "edition": "Standard",
                         "collation": "SQL_Latin1_General_CP1_CS_AS",
                         "maxSizeBytes": "1073741824",
-                        "requestedServiceObjectiveName": "Basic"
+                        "requestedServiceObjectiveName": "S1"
                     }                                    
                 },
                 {
