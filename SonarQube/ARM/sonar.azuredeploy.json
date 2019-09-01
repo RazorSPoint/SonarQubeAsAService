@@ -100,13 +100,11 @@
                         "[parameters('sqlserverName')]"
                     ],                   
                     "properties": {
+                        "edition": "Basic",
                         "collation": "SQL_Latin1_General_CP1_CS_AS",
-                        "maxSizeBytes": "268435456000"
-                    },
-                    "sku": {
-                        "name": "S1",
-                        "tier": "Standard"                    
-                    }                    
+                        "maxSizeBytes": "1073741824",
+                        "requestedServiceObjectiveName": "Basic"
+                    }                                    
                 },
                 {
                     "type": "firewallrules",
