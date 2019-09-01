@@ -13,9 +13,6 @@
         },
         "sqlAdministratorLoginPassword": {
             "value": "## TO BE DEFINED ##"
-        },
-        "alwaysOn": {
-            "value": true 
-        }       
+        }   
     }
 }
