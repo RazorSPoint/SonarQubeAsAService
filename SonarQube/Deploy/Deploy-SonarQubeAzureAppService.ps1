@@ -54,3 +54,7 @@ $connectionString = "jdbc:sqlserver://$SqlServerName.database.windows.net:1433;d
 ) | Set-Content -Path $sonarPropertySource
  
 Move-Item -Path $sonarPropertySource -Destination $sonarPropertyTarget -Force
+
+if($false -eq (Test-Path -Path logs)){
+    New-Item -Path logs -ItemType Directory
+}
