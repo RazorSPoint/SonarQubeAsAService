@@ -22,5 +22,5 @@ steps:
     templateLocation: 'Linked artifact'
     csmFile: 'ARM/sonar.azuredeploy.json'
     csmParametersFile: 'ARM/sonar.azuredeploy.parameters.json'
-    overrideParameters: '-hostingPlanName "test" -webSiteName "test" -sqlserverName "test" -databaseName "test" -skuName "test" -skuCapacity 1 -sqlAdministratorLogin "test" -sqlAdministratorLoginPassword "test"'
+    overrideParameters: '-hostingPlanName "test" -webSiteName "test" -sqlserverName "test" -databaseName "test" -skuName "F1" -skuCapacity 1 -sqlAdministratorLogin "test" -sqlAdministratorLoginPassword "test"'
     deploymentMode: 'Validation'
