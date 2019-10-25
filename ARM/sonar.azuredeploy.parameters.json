@@ -3,16 +3,16 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
          "hostingPlanName": {
-            "value": "F1"
+            "value": "asp-sonarqube"
         },
          "webSiteName": {
-            "value": "F1"
+            "value": "wa-sonarqube"
         },
          "sqlserverName": {
-            "value": "F1"
+            "value": "sqlsrv-sonarqube"
         },
         "databaseName": {
-            "value": "F1"
+            "value": "sqldb-sonarqube"
         },
         "skuName": {
             "value": "F1"
