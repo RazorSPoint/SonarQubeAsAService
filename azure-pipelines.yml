@@ -10,10 +10,14 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    deploymentScope: 'Resource Group'
+    ConnectedServiceName: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
+    subscriptionName: '2b53247c-fb65-469e-a711-46e0c29d15a1'
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: 'Rp-WebTools'
+    location: 'West Europe'
+    templateLocation: 'Linked artifact'
+    deploymentMode: 'Validation'
