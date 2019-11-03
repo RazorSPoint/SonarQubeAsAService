@@ -1,7 +1,11 @@
 name: $(Build.BuildID)
 
-trigger:
-- master
+trigger: none
+
+variables:
+  SqlAdmin: 'sebastian'  
+  SqlAdminPassword: ''
+  Test: ''
 
 stages:
 - stage: Build
@@ -15,6 +19,7 @@ stages:
 
     steps:
     - task: AzureResourceManagerTemplateDeployment@3
+      displayName: 'Validate ARM Templates'
       inputs:
         deploymentScope: 'Resource Group'
         ConnectedServiceName: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
@@ -39,3 +44,34 @@ stages:
       inputs:
         PathtoPublish: '$(build.artifactstagingdirectory)/AzureRessources'
         ArtifactName: AzureRessources
+
+- stage: Test
+  displayName: Test Deployment
+  dependsOn: Build
+
+  jobs:
+
+  - deployment: Deploy_ARM
+    displayName: 'Deploy Infrastructure'    
+    pool:
+     vmImage: 'ubuntu-latest'
+    environment: Test
+    strategy:
+      runOnce:
+        deploy:
+          steps: 
+          - task: AzureResourceManagerTemplateDeployment@3
+            displayName: 'Deploy Infrastructure'
+            inputs:
+              deploymentScope: 'Resource Group'
+              ConnectedServiceName: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
+              subscriptionName: '2b53247c-fb65-469e-a711-46e0c29d15a1'
+              action: 'Create Or Update Resource Group'
+              resourceGroupName: 'Rp-SonarQubeAsAService'
+              location: 'West Europe'
+              templateLocation: 'Linked artifact'
+              csmFile: 'ARM/sonar.azuredeploy.json'
+              csmParametersFile: 'ARM/sonar.azuredeploy.parameters.json'
+              overrideParameters: '-hostingPlanName "asp-test" -webSiteName "wa-test" -sqlserverName "sqlsrv-test" -databaseName "sqldb-test" -skuName "F1" -skuCapacity 1 -sqlAdministratorLogin "test" -sqlAdministratorLoginPassword "test"'
+              deploymentMode: 'Validation'
+          
