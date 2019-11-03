@@ -1,26 +1,71 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+name: $(Build.BuildID)
 
-trigger:
-- master
+trigger: none
 
-pool:
-  vmImage: 'ubuntu-latest'
+stages:
+- stage: Build
+  displayName: Build Stage
 
-steps:
+  jobs:
+  - job: Build_ARM_Phase
+    displayName: 'Build ARM'
+    pool:
+      vmImage: 'ubuntu-latest'
 
-- task: AzureResourceManagerTemplateDeployment@3
-  inputs:
-    deploymentScope: 'Resource Group'
-    ConnectedServiceName: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
-    subscriptionName: '2b53247c-fb65-469e-a711-46e0c29d15a1'
-    action: 'Create Or Update Resource Group'
-    resourceGroupName: 'Rp-SonarQubeAsAService'
-    location: 'West Europe'
-    templateLocation: 'Linked artifact'
-    csmFile: 'ARM/sonar.azuredeploy.json'
-    csmParametersFile: 'ARM/sonar.azuredeploy.parameters.json'
-    overrideParameters: '-hostingPlanName "asp-test" -webSiteName "wa-test" -sqlserverName "sqlsrv-test" -databaseName "sqldb-test" -skuName "F1" -skuCapacity 1 -sqlAdministratorLogin "test" -sqlAdministratorLoginPassword "test"'
-    deploymentMode: 'Validation'
+    steps:
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: 'Validate ARM Templates'
+      inputs:
+        deploymentScope: 'Resource Group'
+        ConnectedServiceName: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
+        subscriptionName: '2b53247c-fb65-469e-a711-46e0c29d15a1'
+        action: 'Create Or Update Resource Group'
+        resourceGroupName: 'Rp-SonarQubeAsAService'
+        location: 'West Europe'
+        templateLocation: 'Linked artifact'
+        csmFile: 'ARM/sonar.azuredeploy.json'
+        csmParametersFile: 'ARM/sonar.azuredeploy.parameters.json'
+        overrideParameters: '-hostingPlanName "asp-test" -webSiteName "wa-test" -sqlserverName "sqlsrv-test" -databaseName "sqldb-test" -skuName "F1" -skuCapacity 1 -sqlAdministratorLogin "test" -sqlAdministratorLoginPassword "test"'
+        deploymentMode: 'Validation'
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: AzureRessources Folder'
+      inputs:
+        SourceFolder: ARM
+        TargetFolder: '$(build.artifactstagingdirectory)/AzureRessources'
+
+    - publish: $(build.artifactstagingdirectory)/AzureRessources
+      artifact:  AzureRessources
+
+- stage: Test
+  displayName: Test Deployment
+  dependsOn: Build
+
+  jobs:
+
+  - deployment: Deploy_ARM
+    displayName: 'Deploy Infrastructure'    
+    pool:
+     vmImage: 'ubuntu-latest'
+    environment: Test
+    strategy:
+      runOnce:
+        deploy:
+          steps: 
+          - download: current
+            artifact: AzureRessources
+            patterns: '**/*.json'
+
+          - task: AzureResourceManagerTemplateDeployment@3
+            inputs:
+              deploymentScope: 'Resource Group'
+              ConnectedServiceName: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
+              subscriptionName: '2b53247c-fb65-469e-a711-46e0c29d15a1'
+              action: 'Create Or Update Resource Group'
+              resourceGroupName: 'Rp-SonarQubeAsAService'
+              location: 'West Europe'
+              templateLocation: 'Linked artifact'
+              csmFile: '../AzureRessources/sonar.azuredeploy.json'
+              csmParametersFile: '../AzureRessources/sonar.azuredeploy.parameters.json'
+              overrideParameters: '-hostingPlanName "asp-test1234abcd" -webSiteName "wa-test1234abcd" -sqlserverName "sqlsrv-test1234abcd" -databaseName "sqldb-test1234abcd" -skuName "F1" -skuCapacity 1 -sqlAdministratorLogin "$(SqlAdmin)" -sqlAdministratorLoginPassword "$(SqlAdminPassword)"'
+              deploymentMode: 'Incremental'
