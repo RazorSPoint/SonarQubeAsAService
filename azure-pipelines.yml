@@ -24,3 +24,15 @@ steps:
     csmParametersFile: 'ARM/sonar.azuredeploy.parameters.json'
     overrideParameters: '-hostingPlanName "asp-test" -webSiteName "wa-test" -sqlserverName "sqlsrv-test" -databaseName "sqldb-test" -skuName "F1" -skuCapacity 1 -sqlAdministratorLogin "test" -sqlAdministratorLoginPassword "test"'
     deploymentMode: 'Validation'
+
+- task: CopyFiles@2
+  displayName: 'Copy Files to: AzureRessources Folder'
+  inputs:
+    SourceFolder: ARM
+    TargetFolder: '$(build.artifactstagingdirectory)/AzureRessources'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: AzureRessources'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)/AzureRessources'
+    ArtifactName: AzureRessources
