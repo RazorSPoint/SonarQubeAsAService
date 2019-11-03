@@ -34,11 +34,8 @@ stages:
         SourceFolder: ARM
         TargetFolder: '$(build.artifactstagingdirectory)/AzureRessources'
 
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: AzureRessources'
-      inputs:
-        PathtoPublish: '$(build.artifactstagingdirectory)/AzureRessources'
-        ArtifactName: AzureRessources
+    - publish: $(build.artifactstagingdirectory)/AzureRessources
+      artifact:  AzureRessources
 
 - stage: Test
   displayName: Test Deployment
@@ -55,6 +52,10 @@ stages:
       runOnce:
         deploy:
           steps: 
+          - download: current
+            artifact: AzureRessources
+            patterns: '**/*.json'
+
           - task: AzureResourceManagerTemplateDeployment@3
             inputs:
               deploymentScope: 'Resource Group'
@@ -64,7 +65,7 @@ stages:
               resourceGroupName: 'Rp-SonarQubeAsAService'
               location: 'West Europe'
               templateLocation: 'Linked artifact'
-              csmFile: 'AzureRessources/sonar.azuredeploy.json'
-              csmParametersFile: 'AzureRessources/sonar.azuredeploy.parameters.json'
+              csmFile: '../AzureRessources/sonar.azuredeploy.json'
+              csmParametersFile: '../AzureRessources/sonar.azuredeploy.parameters.json'
               overrideParameters: '-hostingPlanName "asp-test" -webSiteName "wa-test" -sqlserverName "sqlsrv-test" -databaseName "sqldb-test" -skuName "F1" -skuCapacity 1 -sqlAdministratorLogin "$(SqlAdmin)" -sqlAdministratorLoginPassword "$(SqlAdminPassword)"'
-              deploymentMode: 'Incremental'
+              deploymentMode: 'Incremental'              
