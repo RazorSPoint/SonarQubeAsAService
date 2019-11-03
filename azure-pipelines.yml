@@ -8,35 +8,34 @@ stages:
   displayName: Build Stage
 
   jobs:
-  -job: Build_ARM_Phase
-   displayName:'Build ARM'
-   pool:
-     vmImage: 'ubuntu-latest'
+  - job: Build_ARM_Phase
+    displayName: 'Build ARM'
+    pool:
+      vmImage: 'ubuntu-latest'
 
-steps:
+    steps:
+    - task: AzureResourceManagerTemplateDeployment@3
+      inputs:
+        deploymentScope: 'Resource Group'
+        ConnectedServiceName: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
+        subscriptionName: '2b53247c-fb65-469e-a711-46e0c29d15a1'
+        action: 'Create Or Update Resource Group'
+        resourceGroupName: 'Rp-SonarQubeAsAService'
+        location: 'West Europe'
+        templateLocation: 'Linked artifact'
+        csmFile: 'ARM/sonar.azuredeploy.json'
+        csmParametersFile: 'ARM/sonar.azuredeploy.parameters.json'
+        overrideParameters: '-hostingPlanName "asp-test" -webSiteName "wa-test" -sqlserverName "sqlsrv-test" -databaseName "sqldb-test" -skuName "F1" -skuCapacity 1 -sqlAdministratorLogin "test" -sqlAdministratorLoginPassword "test"'
+        deploymentMode: 'Validation'
 
-- task: AzureResourceManagerTemplateDeployment@3
-  inputs:
-    deploymentScope: 'Resource Group'
-    ConnectedServiceName: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
-    subscriptionName: '2b53247c-fb65-469e-a711-46e0c29d15a1'
-    action: 'Create Or Update Resource Group'
-    resourceGroupName: 'Rp-SonarQubeAsAService'
-    location: 'West Europe'
-    templateLocation: 'Linked artifact'
-    csmFile: 'ARM/sonar.azuredeploy.json'
-    csmParametersFile: 'ARM/sonar.azuredeploy.parameters.json'
-    overrideParameters: '-hostingPlanName "asp-test" -webSiteName "wa-test" -sqlserverName "sqlsrv-test" -databaseName "sqldb-test" -skuName "F1" -skuCapacity 1 -sqlAdministratorLogin "test" -sqlAdministratorLoginPassword "test"'
-    deploymentMode: 'Validation'
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: AzureRessources Folder'
+      inputs:
+        SourceFolder: ARM
+        TargetFolder: '$(build.artifactstagingdirectory)/AzureRessources'
 
-- task: CopyFiles@2
-  displayName: 'Copy Files to: AzureRessources Folder'
-  inputs:
-    SourceFolder: ARM
-    TargetFolder: '$(build.artifactstagingdirectory)/AzureRessources'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: AzureRessources'
-  inputs:
-    PathtoPublish: '$(build.artifactstagingdirectory)/AzureRessources'
-    ArtifactName: AzureRessources
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: AzureRessources'
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)/AzureRessources'
+        ArtifactName: AzureRessources
