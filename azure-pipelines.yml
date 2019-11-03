@@ -2,11 +2,6 @@ name: $(Build.BuildID)
 
 trigger: none
 
-variables:
-  SqlAdmin: 'sebastian'  
-  SqlAdminPassword: ''
-  Test: ''
-
 stages:
 - stage: Build
   displayName: Build Stage
@@ -61,7 +56,6 @@ stages:
         deploy:
           steps: 
           - task: AzureResourceManagerTemplateDeployment@3
-            displayName: 'Deploy Infrastructure'
             inputs:
               deploymentScope: 'Resource Group'
               ConnectedServiceName: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
@@ -73,5 +67,4 @@ stages:
               csmFile: 'ARM/sonar.azuredeploy.json'
               csmParametersFile: 'ARM/sonar.azuredeploy.parameters.json'
               overrideParameters: '-hostingPlanName "asp-test" -webSiteName "wa-test" -sqlserverName "sqlsrv-test" -databaseName "sqldb-test" -skuName "F1" -skuCapacity 1 -sqlAdministratorLogin "test" -sqlAdministratorLoginPassword "test"'
-              deploymentMode: 'Validation'
-          
+              deploymentMode: 'Incremental'
