@@ -1,4 +1,4 @@
-& '.\RunPowerShellKudu.ps1' `
+& '.Deploy\RunPowerShellKudu.ps1' `
     -WebsiteName "mykuduest" `
     -SqlServerName "sqlserv-sonarqubetest" `
     -SqlDatabase "sqldb-sonarqubetest"`
