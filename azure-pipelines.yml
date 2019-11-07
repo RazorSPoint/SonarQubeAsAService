@@ -77,5 +77,5 @@ stages:
               templateLocation: 'Linked artifact'
               csmFile: '../AzureRessources/sonar.azuredeploy.json'
               csmParametersFile: '../AzureRessources/sonar.azuredeploy.parameters.json'
-              overrideParameters: '-hostingPlanName "asp-test1234abcd" -webSiteName "wa-test1234abcd" -sqlserverName "sqlsrv-test1234abcd" -databaseName "sqldb-test1234abcd" -skuName "S1" -skuCapacity 1 -sqlAdministratorLogin "$(SqlAdmin)" -sqlAdministratorLoginPassword "$(SqlAdminPassword)"'
+              overrideParameters: '-hostingPlanName "$(HostingPlan)" -webSiteName "$(Website)" -sqlserverName "$(SqlServer)" -databaseName "$(SqlDb)" -skuName "$(SkuSize)" -skuCapacity $(SkuCapacity) -sqlAdministratorLogin "$(SqlAdmin)" -sqlAdministratorLoginPassword "$(SqlAdminPassword)"'
               deploymentMode: 'Incremental'
