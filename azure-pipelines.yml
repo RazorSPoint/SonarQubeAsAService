@@ -25,7 +25,7 @@ stages:
         templateLocation: 'Linked artifact'
         csmFile: 'ARM/sonar.azuredeploy.json'
         csmParametersFile: 'ARM/sonar.azuredeploy.parameters.json'
-        overrideParameters: '-hostingPlanName "asp-test" -webSiteName "wa-test" -sqlserverName "sqlsrv-test" -databaseName "sqldb-test" -skuName "F1" -skuCapacity 1 -sqlAdministratorLogin "test" -sqlAdministratorLoginPassword "test"'
+        overrideParameters: '-hostingPlanName "$(HostingPlan)" -webSiteName "$(Website)" -sqlserverName "$(SqlServer)" -databaseName "$(SqlDb)" -skuName "$(SkuSize)" -skuCapacity $(SkuCapacity) -sqlAdministratorLogin "$(SqlAdmin)" -sqlAdministratorLoginPassword "$(SqlAdminPassword)"'
         deploymentMode: 'Validation'
 
     - task: CopyFiles@2
