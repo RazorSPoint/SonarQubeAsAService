@@ -36,6 +36,16 @@ stages:
 
     - publish: $(build.artifactstagingdirectory)/AzureRessources
       artifact:  AzureRessources
+    - task: CopyFiles@2
+      inputs:
+        Contents: |
+          **/*.ps1
+          **/*.sonar.properties
+          **/*.config
+        TargetFolder: '$(build.artifactstagingdirectory)/InstallScripts'
+      
+    - publish: $(build.artifactstagingdirectory)/InstallScripts
+      artifact:  InstallScripts
 
 - stage: Test
   displayName: Test Deployment
