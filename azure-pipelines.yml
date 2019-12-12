@@ -91,7 +91,7 @@ stages:
               ConnectionType: 'AzureRM'
               azureSubscription: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
               appType: 'webApp'
-              WebAppName: 'wa-SonarHosting'
+              WebAppName: '$(Website)'
               packageForLinux: '../InstallScripts/Deploy'
               enableCustomDeployment: true
               DeploymentType: 'webDeploy'
@@ -104,3 +104,13 @@ stages:
               ScriptArguments: '-WebsiteName "$(Website)" -SqlServerName "$(SqlServer)" -SqlDatabase "$(SqlDb)" -SqlDatabaseAdmin "$(SqlAdmin)" -SqlDatabaseAdminPassword "$(SqlAdminPassword)" -ResourceGroupName "$(ResourceGroup)"'
               azurePowerShellVersion: 'LatestVersion'
               pwsh: true
+          - task: AzureRmWebAppDeployment@4
+            displayName: "Deploy Run Scripts"
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
+              appType: 'webApp'
+              WebAppName: '$(Website)'
+              packageForLinux: '../InstallScripts/Run'
+              enableCustomDeployment: true
+              DeploymentType: 'webDeploy'
