@@ -100,7 +100,7 @@ stages:
             inputs:
               azureSubscription: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
               ScriptType: 'FilePath'
-              ScriptPath: '../InstallScripts/RunPowerShellKudu.ps1'
+              ScriptPath: '../InstallScripts/Deploy/RunPowerShellKudu.ps1'
               ScriptArguments: '-WebsiteName "$(Website)" -SqlServerName "$(SqlServer)" -SqlDatabase "$(SqlDb)" -SqlDatabaseAdmin "$(SqlAdmin)" -SqlDatabaseAdminPassword "$(SqlAdminPassword)" -ResourceGroupName "$(ResourceGroup)"'
               azurePowerShellVersion: 'LatestVersion'
               pwsh: true
