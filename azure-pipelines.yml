@@ -39,11 +39,11 @@ stages:
     - task: CopyFiles@2
       inputs:
         Contents: |
-          **/*.ps1
+          Deploy/**/*.ps1
+          Run/**/*.ps1
           **/*.sonar.properties
           **/*.config
         TargetFolder: '$(build.artifactstagingdirectory)/InstallScripts'
-        flattenFolders: true
       
     - publish: $(build.artifactstagingdirectory)/InstallScripts
       artifact:  InstallScripts
@@ -64,13 +64,16 @@ stages:
         deploy:
           steps: 
           - download: current
+            displayName: Download AzureRessources
             artifact: AzureRessources
             patterns: '**/*.json'
           - download: current
+            displayName: Download InstallScripts
             artifact: InstallScripts
 
           - powershell: tree "D:\a\1\" /F
           - task: AzureResourceManagerTemplateDeployment@3
+            displayName: "Deploy Infrastructure"
             inputs:
               deploymentScope: 'Resource Group'
               ConnectedServiceName: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
@@ -84,15 +87,17 @@ stages:
               overrideParameters: '-hostingPlanName "$(HostingPlan)" -webSiteName "$(Website)" -sqlserverName "$(SqlServer)" -databaseName "$(SqlDb)" -skuName "$(SkuSize)" -skuCapacity $(SkuCapacity) -sqlAdministratorLogin "$(SqlAdmin)" -sqlAdministratorLoginPassword "$(SqlAdminPassword)"'
               deploymentMode: 'Incremental'
           - task: AzureRmWebAppDeployment@4
+            displayName: "Deploy Installation Scripts"
             inputs:
               ConnectionType: 'AzureRM'
               azureSubscription: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
               appType: 'webApp'
               WebAppName: 'wa-SonarHosting'
-              packageForLinux: '../InstallScripts'
+              packageForLinux: '../InstallScripts/Deploy'
               enableCustomDeployment: true
               DeploymentType: 'webDeploy'
           - task: AzurePowerShell@4
+            displayName: "Install SonarQube on WebApp"
             inputs:
               azureSubscription: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
               ScriptType: 'FilePath'
