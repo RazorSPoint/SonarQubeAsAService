@@ -71,7 +71,6 @@ stages:
             displayName: Download InstallScripts
             artifact: InstallScripts
 
-          - powershell: tree "D:\a\1\" /F
           - task: AzureResourceManagerTemplateDeployment@3
             displayName: "Deploy Infrastructure"
             inputs:
