@@ -86,6 +86,6 @@ stages:
               azureSubscription: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
               appType: 'webApp'
               WebAppName: 'wa-SonarHosting'
-              packageForLinux: '../InstallScripts/**/*'
+              packageForLinux: '$(System.DefaultWorkingDirectory)/InstallScripts'
               enableCustomDeployment: true
               DeploymentType: 'webDeploy'
