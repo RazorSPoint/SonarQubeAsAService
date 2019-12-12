@@ -67,7 +67,7 @@ stages:
             artifact: AzureRessources
             patterns: '**/*.json'
 
-          - powershell: tree /F
+          - powershell: tree $(System.DefaultWorkingDirectory) /F
           - task: AzureResourceManagerTemplateDeployment@3
             inputs:
               deploymentScope: 'Resource Group'
