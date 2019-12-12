@@ -66,6 +66,8 @@ stages:
           - download: current
             artifact: AzureRessources
             patterns: '**/*.json'
+          - download: current
+            artifact: InstallScripts
 
           - powershell: tree "D:\a\1\" /F
           - task: AzureResourceManagerTemplateDeployment@3
