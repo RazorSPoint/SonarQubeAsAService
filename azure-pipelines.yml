@@ -79,3 +79,12 @@ stages:
               csmParametersFile: '../AzureRessources/sonar.azuredeploy.parameters.json'
               overrideParameters: '-hostingPlanName "$(HostingPlan)" -webSiteName "$(Website)" -sqlserverName "$(SqlServer)" -databaseName "$(SqlDb)" -skuName "$(SkuSize)" -skuCapacity $(SkuCapacity) -sqlAdministratorLogin "$(SqlAdmin)" -sqlAdministratorLoginPassword "$(SqlAdminPassword)"'
               deploymentMode: 'Incremental'
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
+              appType: 'webApp'
+              WebAppName: 'wa-SonarHosting'
+              packageForLinux: '$(System.DefaultWorkingDirectory)/Deploy/**/*'
+              enableCustomDeployment: true
+              DeploymentType: 'webDeploy'
