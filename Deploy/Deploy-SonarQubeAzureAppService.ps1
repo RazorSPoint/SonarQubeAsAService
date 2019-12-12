@@ -6,7 +6,9 @@ param(
     [string]
     $SqlDatabaseAdmin,
     [string]
-    $SqlDatabaseAdminPassword
+    $SqlDatabaseAdminPassword,
+    [string]
+    $InstallationDirectory = "..\wwwroot"
 )
 
 function Get-SonarQube ($DestinationPath) {
@@ -76,10 +78,9 @@ Write-Output 'Setting Security to TLS 1.2'
 Write-Output 'Prevent the progress meter from trying to access the console'
 $global:progressPreference = 'SilentlyContinue'
 
-$workingDirectory = "..\wwwroot"
+Get-SonarQube -DestinationPath $InstallationDirectory
 
-Get-SonarQube -DestinationPath $workingDirectory
-Update-SonarConfig -ConfigFilePath $workingDirectory `
+Update-SonarConfig -ConfigFilePath $InstallationDirectory `
                    -SqlServerName $SqlServerName `
                    -SqlDatabase $SqlDatabase `
                    -SqlDatabaseAdmin $SqlDatabaseAdmin `
