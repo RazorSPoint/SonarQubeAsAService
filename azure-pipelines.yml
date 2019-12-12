@@ -41,7 +41,7 @@ stages:
         Contents: |
           Deploy/**/*.ps1
           Run/**/*.ps1
-          **/*.sonar.properties
+          **/sonar.properties
           **/*.config
         TargetFolder: '$(build.artifactstagingdirectory)/InstallScripts'
       
