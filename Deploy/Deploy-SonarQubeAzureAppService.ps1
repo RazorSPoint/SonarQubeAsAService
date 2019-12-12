@@ -39,7 +39,7 @@ function Get-SonarQube ($DestinationPath) {
     Write-Output "Done downloading file $outputFile"
 
     Write-Output 'Extracting zip'
-    $extractOutput = Expand-Archive -Path $outputFile -DestinationPath $DestinationPath -Force -PassThru
+    Expand-Archive -Path $outputFile -DestinationPath $DestinationPath -Force
     Write-Output 'Extraction complete'
 
     Write-Output "Deleting downloaded file $outputFile"
