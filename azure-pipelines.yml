@@ -20,7 +20,7 @@ stages:
         ConnectedServiceName: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
         subscriptionName: '2b53247c-fb65-469e-a711-46e0c29d15a1'
         action: 'Create Or Update Resource Group'
-        resourceGroupName: 'Rp-SonarQubeAsAService'
+        resourceGroupName: '$(ResourceGroup)'
         location: 'West Europe'
         templateLocation: 'Linked artifact'
         csmFile: 'ARM/sonar.azuredeploy.json'
@@ -76,7 +76,7 @@ stages:
               ConnectedServiceName: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
               subscriptionName: '2b53247c-fb65-469e-a711-46e0c29d15a1'
               action: 'Create Or Update Resource Group'
-              resourceGroupName: 'Rp-SonarQubeAsAService'
+              resourceGroupName: '$(ResourceGroup)'
               location: 'West Europe'
               templateLocation: 'Linked artifact'
               csmFile: '../AzureRessources/sonar.azuredeploy.json'
@@ -92,3 +92,11 @@ stages:
               packageForLinux: '../InstallScripts'
               enableCustomDeployment: true
               DeploymentType: 'webDeploy'
+          - task: AzurePowerShell@4
+            inputs:
+              azureSubscription: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
+              ScriptType: 'FilePath'
+              ScriptPath: '../InstallScripts/RunPowerShellKudu.ps1'
+              ScriptArguments: '-WebsiteName "$(Website)" -SqlServerName "$(SqlServer)" -SqlDatabase "$(SqlDb)" -SqlDatabaseAdmin "$(SqlAdmin)" -SqlDatabaseAdminPassword "$(SqlAdminPassword)" -ResourceGroupName "$(ResourceGroup)"'
+              azurePowerShellVersion: 'LatestVersion'
+              pwsh: true
