@@ -37,8 +37,12 @@ function Get-SonarQube ($DestinationPath) {
     Write-Output "Done downloading file $outputFile"
 
     Write-Output 'Extracting zip'
-    Expand-Archive -Path $outputFile -DestinationPath $DestinationPath -Force
+    $extractOutput = Expand-Archive -Path $outputFile -DestinationPath $DestinationPath -Force -PassThru
     Write-Output 'Extraction complete'
+
+    Write-Output "Deleting downloaded file $outputFile"
+    Remove-Item -Path $outputFile -Force
+    Write-Output "File deleted successfully"
 }
 
 function Update-SonarConfig($ConfigFilePath, $SqlServerName, $SqlDatabase, $SqlDatabaseAdmin, $SqlDatabaseAdminPassword) {
@@ -50,7 +54,7 @@ function Update-SonarConfig($ConfigFilePath, $SqlServerName, $SqlDatabase, $SqlD
         Write-Output "Could not find sonar.properties"
         exit
     }
-    
+
     Write-Output "Files found at: `n $($propFiles.FullName)"
     Write-Output "Moving to sonar.properties file"
 
@@ -72,9 +76,14 @@ Write-Output 'Setting Security to TLS 1.2'
 Write-Output 'Prevent the progress meter from trying to access the console'
 $global:progressPreference = 'SilentlyContinue'
 
-Get-SonarQube -DestinationPath "..\wwwroot"
+$workingDirectory = "..\wwwroot"
 
-Update-SonarConfig -ConfigFilePath "..\wwwroot" -SqlServerName $SqlServerName -SqlDatabase $SqlDatabase -SqlDatabaseAdmin $SqlDatabaseAdmin -SqlDatabaseAdminPassword $SqlDatabaseAdminPassword
+Get-SonarQube -DestinationPath $workingDirectory
+Update-SonarConfig -ConfigFilePath $workingDirectory `
+                   -SqlServerName $SqlServerName `
+                   -SqlDatabase $SqlDatabase `
+                   -SqlDatabaseAdmin $SqlDatabaseAdmin `
+                   -SqlDatabaseAdminPassword $SqlDatabaseAdminPassword
 
 if ($false -eq (Test-Path -Path logs)) {
     New-Item -Path logs -ItemType Directory
