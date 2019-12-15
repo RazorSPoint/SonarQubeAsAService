@@ -122,7 +122,7 @@ stages:
               azureSubscription: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
               ScriptType: 'FilePath'
               ScriptPath: '../InstallScripts/Deploy/ConfigureSonar.ps1'
-              ScriptArguments: '-WebsiteName "$(Website)" -AdminUser "admin" -AdminPassword "admin" -AadTenantId "hhhj" -AadClientId "fff" -AadClientSecret "ddd"'
+              ScriptArguments: '-WebAppName "$(Website)" -AdminUser "admin" -AdminPassword "admin" -AadTenantId "hhhj" -AadClientId "fff" -AadClientSecret "ddd"'
               azurePowerShellVersion: 'LatestVersion'
               pwsh: true
           
