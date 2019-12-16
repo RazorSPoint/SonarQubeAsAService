@@ -83,10 +83,8 @@ function Invoke-SonarApiCall {
     try {
         $result = Invoke-RestMethod  @arguments -ErrorAction SilentlyContinue
     }
-    finally {
-        if ($ResponseError) {
-            $result = $ResponseError
-        }
+    catch{
+        $result = $ResponseError
     }
     
     return $result
