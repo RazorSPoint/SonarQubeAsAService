@@ -80,13 +80,16 @@ function Invoke-SonarApiCall {
     }
 
     Write-Information "Calling: $($arguments.Method) - $($arguments.Uri)"
-    $result = Invoke-RestMethod  @arguments -ErrorAction SilentlyContinue
-
-    if ($ResponseError) {
-        return $ResponseError
-    }else{
-        return $result
+    try {
+        $result = Invoke-RestMethod  @arguments -ErrorAction SilentlyContinue
     }
+    finally {
+        if ($ResponseError) {
+            $result = $ResponseError
+        }
+    }
+    
+    return $result
 }
 
 function Set-SonarSetting {
