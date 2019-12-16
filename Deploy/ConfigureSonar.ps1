@@ -79,7 +79,7 @@ function Invoke-SonarApiCall {
         $arguments.Add('TimeoutSec', $TimeoutSec)
     }
 
-    Write-Output "Calling: $($arguments.Method) - $($arguments.Uri)"
+    Write-Information "Calling: $($arguments.Method) - $($arguments.Uri)"
     $result = Invoke-RestMethod  @arguments -ErrorAction SilentlyContinue
 
     if ($ResponseError) {
@@ -98,7 +98,7 @@ function Set-SonarSetting {
         $Value
     )
 
-    Write-Output "Updating setting $Key with value $Value."
+    Write-Information "Updating setting $Key with value $Value."
     $null = Invoke-SonarApiCall -ApiUrl "api/settings/set" -Method POST -Body @{
         key   = $Key
         value = $Value
@@ -121,22 +121,22 @@ function Invoke-RestartSonarQube {
     $status = $null
     $retryCount = 1
 
-    Write-Output "Restarting Sonarqube Server"
+    Write-Information "Restarting Sonarqube Server"
     $webApp = Get-AzWebApp -Name $WebAppName
     $null = Restart-AzWebApp -ResourceGroupName $webApp.ResourceGroup -Name $webApp.Name
     Start-Sleep -Seconds 30
     #Invoke-SonarApiCall -ApiUrl "api/system/restart" -Method POST
 
     while ($retryCount -le $MaximumRetryCount) {        
-        Write-Output "Trying to ping server. Try number $retryCount."
+        Write-Information "Trying to ping server. Try number $retryCount."
         $response = Invoke-SonarApiCall -ApiUrl "api/system/status" -Method GET -TimeoutSec 150
 
         if ($null -ne $response -and $response.status -eq "UP") {            
-            Write-Output "Server is up and running."
+            Write-Information "Server is up and running."
             break
         }
         else {
-            Write-Output "Server not yet up, retry in $RetryIntervalSec."
+            Write-Information "Server not yet up, retry in $RetryIntervalSec."
             Start-Sleep -Seconds $RetryIntervalSec
         } 
         $retryCount = $retryCount + 1       
@@ -163,13 +163,13 @@ function Install-SonarQubePlugin {
 
         $availablePlugin = Invoke-SonarApiCall -ApiUrl "api/plugins/available" -Method Get
         $aadPlugin = $availablePlugin.plugins | Where-Object { $_.key -eq $Name }
-        Write-Output "Installing Plugin $Name"
+        Write-Information "Installing Plugin $Name"
         Invoke-SonarApiCall -ApiUrl "api/plugins/install" -Method POST -Body @{
             key = $aadPlugin.key
         }        
     }
 
-    Write-Output "Plugin $Name installed successfully, server needs to be restarted"
+    Write-Information "Plugin $Name installed successfully, server needs to be restarted"
     return $true
 }
 
@@ -225,6 +225,8 @@ function Initialize-SonarQubeConfiguration {
         #Set-SonarSetting -Key "sonar.auth.aad.enabled" -Value "true"
     }
 }
+
+$InformationPreference = "Continue"
 
 Initialize-SonarQubeConfiguration `
     -WebAppName $WebAppName `
