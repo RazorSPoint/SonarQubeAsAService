@@ -124,7 +124,7 @@ stages:
               DeploymentType: 'webDeploy'
           - script: curl --retry 5 GET https://$(Website).azurewebsites.net
             displayName: "Warm Up SonarQube Website"
-          - powershell: "Start-Sleep -Seconds 240"
+          - powershell: "Start-Sleep -Seconds 420"
             displayName: "Wait for SonarQube being setup (4 minutes)."
           - task: AzurePowerShell@4
             displayName: "Configure SonarQube on WebApp"
