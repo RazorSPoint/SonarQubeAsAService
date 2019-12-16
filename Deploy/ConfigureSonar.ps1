@@ -79,6 +79,7 @@ function Invoke-SonarApiCall {
         $arguments.Add('TimeoutSec', $TimeoutSec)
     }
 
+    Write-Output "Calling: $($arguments.Method) - $($arguments.Uri)"
     $result = Invoke-RestMethod  @arguments -ErrorAction SilentlyContinue
 
     if ($ResponseError) {
