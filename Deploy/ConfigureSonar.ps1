@@ -32,7 +32,7 @@ class SonarQubeCommon {
     static [string] $BaseUrl
 }
 
-function Start-SonarApi {
+function Connect-SQServer {
     param(
         [string]
         $User,
@@ -81,18 +81,25 @@ function Invoke-SonarApiCall {
         $arguments.Add('TimeoutSec', $TimeoutSec)
     }
 
-    Write-Information "Calling: $($arguments.Method) - $($arguments.Uri)"
+    Write-Verbose "Calling: $($arguments.Method) - $($arguments.Uri)"
     try {
-        $result = Invoke-RestMethod  @arguments -ErrorAction SilentlyContinue
+        $response = Invoke-WebRequest @arguments -ErrorAction SilentlyContinue
     }
     catch{
-        $result = $ResponseError
+       
     }
     
-    return $result
+    if ($null -ne $response -and $response.StatusCode -like "2*") {
+        $response.Content | ConvertFrom-Json
+    }
+    else {
+        Write-Host $ResponseError.Message -ErrorAction Stop
+        return "Error" 
+    }
+
 }
 
-function Set-SonarSetting {
+function Set-SQSetting {
     [CmdletBinding()]
     param(        
         [string]
@@ -108,45 +115,7 @@ function Set-SonarSetting {
     }   
 }
 
-function Invoke-RestartSonarQube {
-    [CmdletBinding()]
-    param (
-        [string]
-        $WebAppName = "wa-sonarhosting",
-        [ValidateRange(0, [Int32]::MaxValue)]
-        [Int]
-        $MaximumRetryCount = 0,
-        [ValidateRange(1, [Int32]::MaxValue)]
-        [Int]
-        $RetryIntervalSec = 5
-    )
-
-    $response = $null
-    $retryCount = 1
-
-    Write-Information "Restarting Sonarqube Server"
-    $webApp = Get-AzWebApp -Name $WebAppName
-    $null = Restart-AzWebApp -ResourceGroupName $webApp.ResourceGroup -Name $webApp.Name
-    Start-Sleep -Seconds 30
-    #Invoke-SonarApiCall -ApiUrl "api/system/restart" -Method POST
-
-    while ($retryCount -le $MaximumRetryCount) {        
-        Write-Information "Trying to ping server. Try number $retryCount."
-        $response = Invoke-SonarApiCall -ApiUrl "api/system/status" -Method GET -TimeoutSec 150
-
-        if ($null -ne $response -and $response.status -eq "UP") {            
-            Write-Information "Server is up and running."
-            break
-        }
-        else {
-            Write-Information "Server not yet up, retry in $RetryIntervalSec."
-            Start-Sleep -Seconds $RetryIntervalSec
-        } 
-        $retryCount = $retryCount + 1       
-    }
-}
-
-function Install-SonarQubePlugin {
+function Install-SQPlugin {
     [CmdletBinding()]
     param (
         [string]
@@ -176,46 +145,7 @@ function Install-SonarQubePlugin {
     return $true
 }
 
-
-function New-AuthHeader {
-    <#
-    .SYNOPSIS
-        Creates an authentication header based on username/password or access token that can be used with the other functions in this module to create requests
-    .DESCRIPTION
-        Creates an authentication header based on username/password or access token that can be used with the other functions in this module to create requests
-    .EXAMPLE
-        Get-SonarQubePlugins -Uri https://mysonar.com -Header (New-AuthHeader -username sonaruser -password mypassword) -Installed
-    .EXAMPLE
-        $Header = New-AuthHeader -username sonaruser -password mypassword
-        Get-SonarQubePlugins -Uri https://mysonar.com -Header $Header -Installed
-        Get-SonarQubePlugins -Uri https://mysonar.com -Header $Header -Pending
-    .EXAMPLE
-        $Header = New-AuthHeader -token <PAT>
-        Get-SonarQubePlugins -Uri https://mysonar.com -Header $Header -Installed
-    #>
-    param(
-        [Parameter(ParameterSetName = "credentials", Mandatory = $True)]
-        [string]$username,
-        [string]$password,
-        [Parameter(ParameterSetName = "token", Mandatory = $True)]
-        [string]$token
-    )
-
-    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
-
-    switch ($PSBoundParameters.Keys) {
-        'username' { $encodedString = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("$($username):$($password)")) }
-
-        'token' { $encodedString = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("$token")) }
-    }
-
-    $Header = @{
-        Authorization = "Basic $encodedString"
-    }
-    return $Header
-}
-
-function Get-SonarQubeInfo {
+function Get-SQInfo {
     <#
     .SYNOPSIS
         Gets a number of states from the SonarQube server.
@@ -223,15 +153,10 @@ function Get-SonarQubeInfo {
         Gets a number of states from the SonarQube server, can be used in conjunction with other functions in this module such as Restart-SonarQubeServer.
         You can be creative, try diferent combinations. You can also see the examples.
     .EXAMPLE
-        $Header = New-AuthHeader -username sonaruser -password mypassword
-        $status = Get-SonarQubeInfo -Uri https://mysonar.com -Header $Header -serverStatus
+        $status = Get-SonarQubeInfo -serverStatus
         if ($status -eq "UP") {Write-Output "Your sonarqube server is up, good job!"}
     #>
     param(
-        [Parameter(Mandatory = $true)]
-        $Uri,
-        [Parameter(Mandatory = $true)]
-        $Header,
         [Parameter(ParameterSetName = "serverVersion", Mandatory = $True)]
         [switch]$serverVersion,
         [Parameter(ParameterSetName = "serverStatus", Mandatory = $True)]
@@ -252,26 +177,17 @@ function Get-SonarQubeInfo {
         'systemUpgrades' { $apiUrl = 'system/upgrades'; $option = 'upgrades' }
     }
 
-    try {
-        $response = Invoke-WebRequest -Uri "$Uri/api/$apiUrl" -Method Get -Headers $Header -ErrorVariable ResponseError
-    }
-    catch {
 
-    }
+    $result = Invoke-SonarApiCall -ApiUrl "api/$apiUrl" -Method Get
 
-    if ($response.StatusCode -eq 200) {
-
-        $status = $response.Content | ConvertFrom-Json
-        $status.$option
-    }
-    else {
-        Write-Host $ResponseError.Message -ErrorAction Stop
-        return "Error" 
-    }
-
+    if($result -eq 'Error'){
+        $result
+    }else{
+        $result.$option
+    }    
 }
 
-function Wait-SonarQubeStart {
+function Wait-SQStart {
     <#
     .SYNOPSIS
         Waits for SonarQube server to become available from different states.
@@ -279,16 +195,11 @@ function Wait-SonarQubeStart {
         Waits for SonarQube server to become available from different states. 
         It is useful when you just restarted the server or after a database schema was initiated and you need to do something else after for example.
     .EXAMPLE
-        $Header = New-AuthHeader -username sonaruser -password mypassword
-        Restart-SonarQubeServer -Uri https://mysonar.com -Header $Header
-        Wait-SonarQubeStart -Uri https://mysonar.com -Header $Header
+        Restart-SQServer
+        Wait-SQStart
     #>
-    param (
-        [ValidateNotNullOrEmpty()]$Uri
-      ##  [ValidateNotNullOrEmpty()]$Header
-    )
     
-    if (!(Get-Command Get-SonarQubeInfo)) {
+    if (!(Get-Command Get-SQInfo)) {
         Write-Output "Did not found prerequisite cmdlet, stoping execution"
         exit
     }
@@ -296,21 +207,50 @@ function Wait-SonarQubeStart {
     $started = $false
     Do {
         
-        $status = Get-SonarQubeInfo -Uri $Uri -Header $Header -serverStatus 
+        $status = Get-SQInfo -serverStatus 
 
         switch ($status) {
             'UP' { Write-Output "SonarQube status: $status SonarQube Online!" ; $started = $true }
             'DOWN' { Write-Output "SonarQube is down for some reason, please review the logs for details"; exit }
             { $_ -in 'STARTING', 'RESTARTING', 'DB_MIGRATION_RUNNING' } { Write-Output "SonarQube status: $status, waiting for SonarQube service to start.." ; Start-Sleep -Seconds 5 }
             { $_ -in 'DB_MIGRATION_NEEDED' } { Write-Output "Your SonarQube needs a dbschema migration, stopping"; exit }
-            { $_ -in 'Error' } { Write-Output "SonarQube status: $status, waiting for SonarQube service to start.." ; Start-Sleep -Seconds 5 }
+            { $_ -in 'Error' } { Write-Output "SonarQube status: $status, waiting for SonarQube service to start.." ; Start-Sleep -Seconds 10 }
         }
 
     }
     Until ($started)
 }
 
-function Initialize-SonarQubeConfiguration {
+function Restart-SQServer {
+    <#
+    .SYNOPSIS
+        Restarts the SonarQube server.
+    .DESCRIPTION
+        Restarts the SonarQube server. You might need to do that after you install, uninstall, updated plugins for example.
+    .EXAMPLE        
+        Restart-SonarQubeServer
+        Wait-SonarQubeStart
+    #>
+    [CmdletBinding()]
+    param (
+        [string]
+        $WebAppName = "wa-sonarhosting"
+    )
+
+    Write-Information "Restarting Sonarqube Server"
+    if($WebAppName){
+        $webApp = Get-AzWebApp -Name $WebAppName       
+        $null = Restart-AzWebApp -ResourceGroupName $webApp.ResourceGroup -Name $webApp.Name
+        Start-Sleep -Seconds 30 
+    }else{
+        $null = Invoke-SonarApiCall -ApiUrl "api/system/restart" -Method Post
+    }
+
+    Write-Output "Restarting SonarQube server, please wait.."
+}
+
+
+function Initialize-SQConfiguration {
     [CmdletBinding(DefaultParameterSetName = 'IntegratedLogin')]
     param (
         [string]
@@ -338,36 +278,36 @@ function Initialize-SonarQubeConfiguration {
 
     $SonarBaseUrl = "https://$WebAppName.azurewebsites.net"
 
-    Start-SonarApi -User $AdminUser -Password $AdminPassword -BaseUrl $SonarBaseUrl
-
-    $header = New-AuthHeader -username $AdminUser -password $AdminPassword
-    Wait-SonarQubeStart -Uri $SonarBaseUrl -Header $header
+    Connect-SQServer -User $AdminUser -Password $AdminPassword -BaseUrl $SonarBaseUrl
+    Wait-SQStart -Uri $SonarBaseUrl
 
     #only allow logged in users to see something
-    Set-SonarSetting -Key "sonar.forceAuthentication" -Value "true"
+    Set-SQSetting -Key "sonar.forceAuthentication" -Value "true"
 
     #set settings for aad plugin
     if ($PsCmdlet.ParameterSetName -eq "AzureADLogin") {
 
         # install azure aad plugin
-        $needsRestart = Install-SonarQubePlugin -Name "authaad"
+        $needsRestart = Install-SQPlugin -Name "authaad"
         $needsRestart = $true
+
         if ($needsRestart ) {
-            Invoke-RestartSonarQube -MaximumRetryCount 5 -RetryIntervalSec 45 -WebAppName $WebAppName
+            Restart-SQServer -WebAppName $WebAppName
+            Wait-SQStart -Uri $SonarBaseUrl
         }
 
-        Set-SonarSetting -Key "sonar.auth.aad.tenantId" -Value $AadTenantId
-        Set-SonarSetting -Key "sonar.auth.aad.clientId.secured" -Value $AadClientId
-        Set-SonarSetting -Key "sonar.auth.aad.clientSecret.secured" -Value $AadClientSecret
-        Set-SonarSetting -Key "sonar.auth.aad.enableGroupsSync" -Value "true"
-        Set-SonarSetting -Key "sonar.auth.aad.loginStrategy" -Value "Same as Azure AD login"
-        #Set-SonarSetting -Key "sonar.auth.aad.enabled" -Value "true"
+        Set-SQSetting -Key "sonar.auth.aad.tenantId" -Value $AadTenantId
+        Set-SQSetting -Key "sonar.auth.aad.clientId.secured" -Value $AadClientId
+        Set-SQSetting -Key "sonar.auth.aad.clientSecret.secured" -Value $AadClientSecret
+        Set-SQSetting -Key "sonar.auth.aad.enableGroupsSync" -Value "true"
+        Set-SQSetting -Key "sonar.auth.aad.loginStrategy" -Value "Same as Azure AD login"
+        #Set-SQSetting -Key "sonar.auth.aad.enabled" -Value "true"
     }
 }
 
 $InformationPreference = "Continue"
 
-Initialize-SonarQubeConfiguration `
+Initialize-SQConfiguration `
     -WebAppName $WebAppName `
     -AdminUser $AdminUser -AdminPassword $AdminPassword `
     -AadTenantId $AadTenantId -AadClientId $AadClientId -AadClientSecret $AadClientSecret
