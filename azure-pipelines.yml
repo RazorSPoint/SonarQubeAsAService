@@ -113,10 +113,6 @@ stages:
               packageForLinux: '../InstallScripts/Run'
               enableCustomDeployment: true
               DeploymentType: 'webDeploy'
-          - script: curl --retry 5 GET https://$(Website).azurewebsites.net
-            displayName: "Warm Up SonarQube Website"
-          - powershell: "Start-Sleep -Seconds 5"
-            displayName: "Wait for SonarQube being setup (4 minutes)."
           - task: AzurePowerShell@4
             displayName: "Configure SonarQube on WebApp"
             inputs:
