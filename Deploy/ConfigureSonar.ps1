@@ -121,7 +121,7 @@ function Invoke-RestartSonarQube {
         $RetryIntervalSec = 5
     )
 
-    $status = $null
+    $response = $null
     $retryCount = 1
 
     Write-Information "Restarting Sonarqube Server"
@@ -284,7 +284,7 @@ function Wait-SonarQubeStart {
         Wait-SonarQubeStart -Uri https://mysonar.com -Header $Header
     #>
     param (
-        [ValidateNotNullOrEmpty()]$Uri,
+        [ValidateNotNullOrEmpty()]$Uri
       ##  [ValidateNotNullOrEmpty()]$Header
     )
     
