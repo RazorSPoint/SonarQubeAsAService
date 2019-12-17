@@ -93,7 +93,7 @@ function Invoke-SonarApiCall {
         $response.Content | ConvertFrom-Json
     }
     else {
-        Write-Host $ResponseError.Message -ErrorAction Stop
+        Write-Verbose $ResponseError.Message -ErrorAction Stop
         return "Error" 
     }
 
