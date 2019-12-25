@@ -4,24 +4,28 @@
     "parameters": {
         "hostingPlanName": {
             "type": "string",
+            "maxLength":26,
             "metadata": {
                 "description": "The admin user of the SQL Server"
             }
         },
         "webSiteName": {
             "type": "string",
+            "maxLength":46,
             "metadata": {
                 "description": "The admin user of the SQL Server"
             }
         },
         "sqlserverName": {
             "type": "string",
+            "maxLength":49,
             "metadata": {
                 "description": "The admin user of the SQL Server"
             }
         },
         "databaseName": {
             "type": "string",
+            "maxLength":114,
             "metadata": {
                 "description": "The admin user of the SQL Server"
             }
@@ -75,8 +79,14 @@
             }
         }
     },
+    "variables":{
+        "uniqueHostingPlanName":"[concat(parameters('hostingPlanName'), uniqueString(resourceGroup().id))]",
+        "uniqueWebSiteName":"[concat(parameters('webSiteName'), uniqueString(resourceGroup().id))]",
+        "uniqueSqlserverName":"[concat(parameters('sqlserverName'), uniqueString(resourceGroup().id))]",
+        "uniqueDatabaseName":"[concat(parameters('databaseName'), uniqueString(resourceGroup().id))]"
+    },
     "resources": [{
-            "name": "[parameters('sqlserverName')]",
+            "name": "[variables('uniqueSqlserverName')]",
             "type": "Microsoft.Sql/servers",
             "location": "[parameters('location')]",
             "tags": {
@@ -89,7 +99,7 @@
                 "version": "12.0"
             },
             "resources": [{
-                    "name": "[parameters('databaseName')]",
+                    "name": "[variables('uniqueDatabaseName')]",
                     "type": "databases",
                     "location": "[parameters('location')]",
                     "tags": {
@@ -97,7 +107,7 @@
                     },
                     "apiVersion": "2015-01-01",
                     "dependsOn": [
-                        "[parameters('sqlserverName')]"
+                        "[variables('uniqueSqlserverName')]"
                     ],                   
                     "properties": {
                         "edition": "Standard",
@@ -110,7 +120,7 @@
                     "type": "firewallrules",
                     "apiVersion": "2014-04-01",
                     "dependsOn": [
-                        "[parameters('sqlserverName')]"
+                        "[variables('uniqueSqlserverName')]"
                     ],
                     "location": "[parameters('location')]",
                     "name": "Allow All Windows Azure Ips",
@@ -123,7 +133,7 @@
         },
         {
             "apiVersion": "2016-03-01",
-            "name": "[parameters('hostingPlanName')]",
+            "name": "[variables('uniqueHostingPlanName')]",
             "type": "Microsoft.Web/serverfarms",
             "location": "[parameters('location')]",
             "tags": {
@@ -134,24 +144,24 @@
                 "capacity": "[parameters('skuCapacity')]"
             },
             "properties": {
-                "name": "[parameters('hostingPlanName')]"
+                "name": "[variables('uniqueHostingPlanName')]"
             }
         },
         {
             "apiVersion": "2016-03-01",
-            "name": "[parameters('webSiteName')]",
+            "name": "[variables('uniqueWebSiteName')]",
             "type": "Microsoft.Web/sites",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[parameters('hostingPlanName')]"
+                "[variables('uniqueHostingPlanName')]"
             ],
             "tags": {
-                "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName')))]": "empty",
+                "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', variables('uniqueHostingPlanName')))]": "empty",
                 "displayName": "SonarQube Website"
             },
             "properties": {
-                "name": "[parameters('webSiteName')]",
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",              
+                "name": "[variables('uniqueWebSiteName')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('uniqueHostingPlanName'))]",              
                 "clientAffinityEnabled": false
             },
             "resources": [{
@@ -159,7 +169,7 @@
                 "type": "config",
                 "apiVersion": "2016-08-01",
                 "dependsOn": [
-                    "[resourceId('Microsoft.Web/sites', parameters('webSiteName'))]"
+                    "[resourceId('Microsoft.Web/sites', variables('uniqueHostingPlanName'))]"
                 ],
                 "tags":{
                     "displayName": "Java TOMCAT 9.0"
@@ -174,15 +184,15 @@
         },
         {
             "apiVersion": "2015-04-01",
-            "name": "[concat(parameters('hostingPlanName'), '-', resourceGroup().name)]",
+            "name": "[concat(variables('uniqueHostingPlanName'), '-', resourceGroup().name)]",
             "type": "Microsoft.Insights/autoscalesettings",
             "location": "[parameters('location')]",
             "tags": {
-                "[concat('hidden-link:', resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName')))]": "Resource",
+                "[concat('hidden-link:', resourceId('Microsoft.Web/serverfarms', variables('uniqueHostingPlanName')))]": "Resource",
                 "displayName": "AutoScale Settings"
             },
             "dependsOn": [
-                "[parameters('hostingPlanName')]"
+                "[variables('uniqueHostingPlanName')]"
             ],
             "properties": {
                 "profiles": [{
@@ -195,7 +205,7 @@
                     "rules": [{
                             "metricTrigger": {
                                 "metricName": "CpuPercentage",
-                                "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",
+                                "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', variables('uniqueHostingPlanName'))]",
                                 "timeGrain": "PT1M",
                                 "statistic": "Average",
                                 "timeWindow": "PT10M",
@@ -213,7 +223,7 @@
                         {
                             "metricTrigger": {
                                 "metricName": "CpuPercentage",
-                                "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",
+                                "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', variables('uniqueHostingPlanName'))]",
                                 "timeGrain": "PT1M",
                                 "statistic": "Average",
                                 "timeWindow": "PT1H",
@@ -231,31 +241,31 @@
                     ]
                 }],
                 "enabled": false,
-                "name": "[concat(parameters('hostingPlanName'), '-', resourceGroup().name)]",
-                "targetResourceUri": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]"
+                "name": "[concat(variables('uniqueHostingPlanName'), '-', resourceGroup().name)]",
+                "targetResourceUri": "[resourceId('Microsoft.Web/serverfarms', variables('uniqueHostingPlanName'))]"
             }
         },
         {
             "apiVersion": "2015-05-01",
-            "name": "[concat('AppInsights', parameters('webSiteName'))]",
+            "name": "[concat('AppInsights', variables('uniqueWebSiteName'))]",
             "type": "Microsoft.Insights/components",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[parameters('webSiteName')]"
+                "[variables('uniqueWebSiteName')]"
             ],
             "tags": {
-                "[concat('hidden-link:', resourceId('Microsoft.Web/sites', parameters('webSiteName')))]": "Resource",
+                "[concat('hidden-link:', resourceId('Microsoft.Web/sites', variables('uniqueWebSiteName')))]": "Resource",
                 "displayName": "Application Insights"
             },
             "properties": {
-                "ApplicationId": "[parameters('webSiteName')]"
+                "ApplicationId": "[variables('uniqueWebSiteName')]"
             }
         }
     ],
     "outputs": {
         "siteUri": {
             "type": "string",
-            "value": "[reference(concat('Microsoft.Web/sites/', parameters('webSiteName'))).hostnames[0]]"
+            "value": "[reference(concat('Microsoft.Web/sites/', variables('uniqueWebSiteName'))).hostnames[0]]"
         }
     }
 }
