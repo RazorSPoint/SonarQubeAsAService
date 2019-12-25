@@ -30,6 +30,14 @@
                 "description": "The admin user of the SQL Server"
             }
         },
+        "suffixName":{
+            "type":"string",
+            "defaultValue": "3jfg98klhepo",
+            "maxLength": 13,
+            "metadata":{
+                "description": "Suffix added to the azure resource being created"
+            }
+        },
         "skuName": {
             "type": "string",
             "defaultValue": "F1",
@@ -80,10 +88,11 @@
         }
     },
     "variables":{
-        "uniqueHostingPlanName":"[concat(parameters('hostingPlanName'), uniqueString(resourceGroup().id))]",
-        "uniqueWebSiteName":"[concat(parameters('webSiteName'), uniqueString(resourceGroup().id))]",
-        "uniqueSqlserverName":"[concat(parameters('sqlserverName'), uniqueString(resourceGroup().id))]",
-        "uniqueDatabaseName":"[concat(parameters('databaseName'), uniqueString(resourceGroup().id))]"
+        "uniqueSuffix": "[uniqueString(resourceGroup().id)]",
+        "uniqueHostingPlanName":"[concat(parameters('hostingPlanName'), parameters('suffixName'))]",
+        "uniqueWebSiteName":"[concat(parameters('webSiteName'), parameters('suffixName'))]",
+        "uniqueSqlserverName":"[concat(parameters('sqlserverName'), parameters('suffixName'))]",
+        "uniqueDatabaseName":"[concat(parameters('databaseName'), parameters('suffixName'))]"
     },
     "resources": [{
             "name": "[variables('uniqueSqlserverName')]",
