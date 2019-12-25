@@ -3,21 +3,21 @@ name: $(Build.BuildID)
 trigger: none
 
 variables:
-- group: SonarVars
-- name: HostingPlan
-  value:'asp-SonarHosting'
-- name: ResourceGroup
-  value:'Rp-SonarQubeAsAService'
-- name: SkuCapacity
-  value:'1'
-- name:SkuSize
-  value:'S1'
-- name:SqlDb
-  value:'sqldb-sonarhosting'
-- name:SqlServer
-  value:'sqlsrv-sonarhosting'
-- name:Website
-  value:'wa-SonarHosting'
+  - name: HostingPlan
+    value:'asp-SonarHosting'
+  - name: ResourceGroup
+    value:'Rp-SonarQubeAsAService'
+  - name: SkuCapacity
+    value:'1'
+  - name:SkuSize
+    value:'S1'
+  - name:SqlDb
+    value:'sqldb-sonarhosting'
+  - name:SqlServer
+    value:'sqlsrv-sonarhosting'
+  - name:Website
+    value:'wa-SonarHosting'
+  - group: SonarVars
 
 stages:
 - stage: Build
