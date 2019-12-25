@@ -6,7 +6,7 @@ variables:
 - group: 'Sonar Qube as a Service'
 
 - name: HostingPlan
-  value: 'asp-SonarHosting'
+  value: 'asp-$(InfraStructureSuffix)'
 - name: ResourceGroup
   value: 'Rp-SonarQubeAsAService'
 - name: SkuCapacity
@@ -14,11 +14,11 @@ variables:
 - name: SkuSize
   value: 'S1'
 - name: SqlDb
-  value: 'sqldb-sonarhosting'
+  value: 'sqldb-$(InfraStructureSuffix)'
 - name: SqlServer
-  value: 'sqlsrv-sonarhosting'
+  value: 'sqlsrv-$(InfraStructureSuffix)'
 - name: Website
-  value: 'wa-SonarHosting'
+  value: 'wa-$(InfraStructureSuffix)'
 
 stages:
 - stage: Build
