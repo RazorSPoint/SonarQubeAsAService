@@ -17,8 +17,8 @@ stages:
       displayName: 'Validate ARM Templates'
       inputs:
         deploymentScope: 'Resource Group'
-        ConnectedServiceName: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
-        subscriptionName: '2b53247c-fb65-469e-a711-46e0c29d15a1'
+        ConnectedServiceName: '$(AzureConnectionServiceName)'
+        subscriptionName: '$(SubscriptionGuid)'
         action: 'Create Or Update Resource Group'
         resourceGroupName: '$(ResourceGroup)'
         location: 'West Europe'
@@ -74,8 +74,8 @@ stages:
             displayName: "Deploy Infrastructure"
             inputs:
               deploymentScope: 'Resource Group'
-              ConnectedServiceName: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
-              subscriptionName: '2b53247c-fb65-469e-a711-46e0c29d15a1'
+              ConnectedServiceName: '$(AzureConnectionServiceName)'
+              subscriptionName: '$(SubscriptionGuid)'
               action: 'Create Or Update Resource Group'
               resourceGroupName: '$(ResourceGroup)'
               location: 'West Europe'
@@ -88,7 +88,7 @@ stages:
             displayName: "Deploy Installation Scripts"
             inputs:
               ConnectionType: 'AzureRM'
-              azureSubscription: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
+              azureSubscription: '$(AzureConnectionServiceName)'
               appType: 'webApp'
               WebAppName: '$(Website)'
               packageForLinux: '../InstallScripts/Deploy'
@@ -97,17 +97,17 @@ stages:
           - task: AzurePowerShell@4
             displayName: "Install SonarQube on WebApp"
             inputs:
-              azureSubscription: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
+              azureSubscription: '$(AzureConnectionServiceName)'
               ScriptType: 'FilePath'
               ScriptPath: '../InstallScripts/Deploy/RunPowerShellKudu.ps1'
               ScriptArguments: '-WebsiteName "$(Website)" -SqlServerName "$(SqlServer)" -SqlDatabase "$(SqlDb)" -SqlDatabaseAdmin "$(SqlAdmin)" -SqlDatabaseAdminPassword "$(SqlAdminPassword)" -ResourceGroupName "$(ResourceGroup)"'
               azurePowerShellVersion: 'LatestVersion'
-              pwsh: true
+              pwsh: true              
           - task: AzureRmWebAppDeployment@4
             displayName: "Deploy Run Scripts"
             inputs:
               ConnectionType: 'AzureRM'
-              azureSubscription: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
+              azureSubscription: '$(AzureConnectionServiceName)'
               appType: 'webApp'
               WebAppName: '$(Website)'
               packageForLinux: '../InstallScripts/Run'
@@ -116,7 +116,7 @@ stages:
           - task: AzurePowerShell@4
             displayName: "Configure SonarQube on WebApp"
             inputs:
-              azureSubscription: 'Visual Studio Enterprise: BizSpark(2b53247c-fb65-469e-a711-46e0c29d15a1)'
+              azureSubscription: '$(AzureConnectionServiceName)'
               ScriptType: 'FilePath'
               ScriptPath: '../InstallScripts/Deploy/ConfigureSonar.ps1'
               ScriptArguments: '-WebAppName "$(Website)" -AdminUser "admin" -AdminPassword "admin" -AadTenantId "hhhj" -AadClientId "fff" -AadClientSecret "ddd"'
