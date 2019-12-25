@@ -80,7 +80,7 @@
             "type": "Microsoft.Sql/servers",
             "location": "[parameters('location')]",
             "tags": {
-                "displayName": "SqlServer"
+                "displayName": "MS Sql Server"
             },
             "apiVersion": "2014-04-01",
             "properties": {
@@ -93,7 +93,7 @@
                     "type": "databases",
                     "location": "[parameters('location')]",
                     "tags": {
-                        "displayName": "Database"
+                        "displayName": "SonarQube Database"
                     },
                     "apiVersion": "2015-01-01",
                     "dependsOn": [
@@ -113,7 +113,7 @@
                         "[parameters('sqlserverName')]"
                     ],
                     "location": "[parameters('location')]",
-                    "name": "AllowAllWindowsAzureIps",
+                    "name": "Allow All Windows Azure Ips",
                     "properties": {
                         "endIpAddress": "0.0.0.0",
                         "startIpAddress": "0.0.0.0"
@@ -127,7 +127,7 @@
             "type": "Microsoft.Web/serverfarms",
             "location": "[parameters('location')]",
             "tags": {
-                "displayName": "HostingPlan"
+                "displayName": "Hosting Plan"
             },
             "sku": {
                 "name": "[parameters('skuName')]",
@@ -147,7 +147,7 @@
             ],
             "tags": {
                 "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName')))]": "empty",
-                "displayName": "Website"
+                "displayName": "SonarQube Website"
             },
             "properties": {
                 "name": "[parameters('webSiteName')]",
@@ -161,6 +161,9 @@
                 "dependsOn": [
                     "[resourceId('Microsoft.Web/sites', parameters('webSiteName'))]"
                 ],
+                "tags":{
+                    "displayName": "Java TOMCAT 9.0"
+                },
                 "properties": {
                     "alwaysOn": true,
                     "javaVersion": "11",
@@ -176,7 +179,7 @@
             "location": "[parameters('location')]",
             "tags": {
                 "[concat('hidden-link:', resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName')))]": "Resource",
-                "displayName": "AutoScaleSettings"
+                "displayName": "AutoScale Settings"
             },
             "dependsOn": [
                 "[parameters('hostingPlanName')]"
@@ -242,7 +245,7 @@
             ],
             "tags": {
                 "[concat('hidden-link:', resourceId('Microsoft.Web/sites', parameters('webSiteName')))]": "Resource",
-                "displayName": "AppInsightsComponent"
+                "displayName": "Application Insights"
             },
             "properties": {
                 "ApplicationId": "[parameters('webSiteName')]"
