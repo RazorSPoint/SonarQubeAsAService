@@ -6,19 +6,19 @@ variables:
 - group: 'Sonar Qube as a Service'
 
 - name: HostingPlan
-  value: 'asp-SonarHosting'
+  value: 'asp-SonarHosting$(SuffixName)'
+- name: SqlDb
+  value: 'sqldb-sonarhosting$(SuffixName)'
+- name: SqlServer
+  value: 'sqlsrv-sonarhosting$(SuffixName)'
+- name: Website
+  value: 'wa-SonarHosting$(SuffixName)'
 - name: ResourceGroup
   value: 'Rp-SonarQubeAsAService'
 - name: SkuCapacity
   value: '1'
 - name: SkuSize
   value: 'S1'
-- name: SqlDb
-  value: 'sqldb-sonarhosting'
-- name: SqlServer
-  value: 'sqlsrv-sonarhosting'
-- name: Website
-  value: 'wa-SonarHosting'
 
 stages:
 - stage: Build
@@ -100,7 +100,7 @@ stages:
               templateLocation: 'Linked artifact'
               csmFile: '../AzureRessources/sonar.azuredeploy.json'
               csmParametersFile: '../AzureRessources/sonar.azuredeploy.parameters.json'
-              overrideParameters: '-hostingPlanName "$(HostingPlan)" -webSiteName "$(Website)" -sqlserverName "$(SqlServer)" -databaseName "$(SqlDb)" -skuName "$(SkuSize)" -skuCapacity $(SkuCapacity) -sqlAdministratorLogin "$(SqlAdmin)" -sqlAdministratorLoginPassword "$(SqlAdminPassword)"'
+              overrideParameters: '-hostingPlanName "$(HostingPlan)" -webSiteName "$(Website)" -sqlserverName "$(SqlServer)" -databaseName "$(SqlDb)" -skuName "$(SkuSize)" -skuCapacity $(SkuCapacity) -sqlAdministratorLogin "$(SqlAdmin)" -sqlAdministratorLoginPassword "$(SqlAdminPassword)" -suffixName "$(SuffixName)"'
               deploymentMode: 'Incremental'
           - task: AzureRmWebAppDeployment@4
             displayName: "Deploy Installation Scripts"
