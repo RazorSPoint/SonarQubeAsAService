@@ -192,7 +192,7 @@
                 "displayName": "AutoScale Settings"
             },
             "dependsOn": [
-                "[variables('uniqueHostingPlanName')]"
+                "[variables('uniqueWebSiteName')]"
             ],
             "properties": {
                 "profiles": [{
