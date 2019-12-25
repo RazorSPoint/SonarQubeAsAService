@@ -4,28 +4,24 @@
     "parameters": {
         "hostingPlanName": {
             "type": "string",
-            "maxLength":26,
             "metadata": {
                 "description": "The admin user of the SQL Server"
             }
         },
         "webSiteName": {
             "type": "string",
-            "maxLength":46,
             "metadata": {
                 "description": "The admin user of the SQL Server"
             }
         },
         "sqlserverName": {
             "type": "string",
-            "maxLength":49,
             "metadata": {
                 "description": "The admin user of the SQL Server"
             }
         },
         "databaseName": {
             "type": "string",
-            "maxLength":114,
             "metadata": {
                 "description": "The admin user of the SQL Server"
             }
