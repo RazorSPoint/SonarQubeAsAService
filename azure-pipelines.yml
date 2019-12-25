@@ -100,7 +100,7 @@ stages:
               templateLocation: 'Linked artifact'
               csmFile: '../AzureRessources/sonar.azuredeploy.json'
               csmParametersFile: '../AzureRessources/sonar.azuredeploy.parameters.json'
-              overrideParameters: '-hostingPlanName "$(HostingPlan)" -webSiteName "$(Website)" -sqlserverName "$(SqlServer)" -databaseName "$(SqlDb)" -skuName "$(SkuSize)" -skuCapacity $(SkuCapacity) -sqlAdministratorLogin "$(SqlAdmin)" -sqlAdministratorLoginPassword "$(SqlAdminPassword)" -suffixName "$(SuffixName)"'
+              overrideParameters: '-hostingPlanName "$(HostingPlan)" -webSiteName "$(Website)" -sqlserverName "$(SqlServer)" -databaseName "$(SqlDb)" -skuName "$(SkuSize)" -skuCapacity $(SkuCapacity) -sqlAdministratorLogin "$(SqlAdmin)" -sqlAdministratorLoginPassword "$(SqlAdminPassword)"'
               deploymentMode: 'Incremental'
           - task: AzureRmWebAppDeployment@4
             displayName: "Deploy Installation Scripts"
