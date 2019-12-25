@@ -2,6 +2,9 @@ name: $(Build.BuildID)
 
 trigger: none
 
+variables:
+  -group: SonarVars
+  
 stages:
 - stage: Build
   displayName: Build Stage
