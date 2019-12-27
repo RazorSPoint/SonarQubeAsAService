@@ -122,16 +122,19 @@ The following variables are defined in the pipeline.
 ## Shoutouts and References
 
 ### SonarQube PowerShell cmdlets by [Razvan Stefan Hurhui](https://github.com/Razvanxp)
-Used some of the cmdets for accessing the SonarQube api.  
-Repository: https://github.com/Razvanxp/SonarQubePS
+Used some of the cmdets for accessing the SonarQube api.
+
+**Repository:** https://github.com/Razvanxp/SonarQubePS
 
 ### SonarQube on a WebApp basic idea by [Nathan Vanderby (Microsoft)](https://github.com/vanderby)
-I used some of the PowerShell scripts like and parts of the ARM template for the web app to get SonarQube running on a PaaS service.  
-Repository: https://github.com/vanderby/SonarQube-AzureAppService  
-Blog Post: https://devblogs.microsoft.com/premier-developer/sonarqube-hosted-on-azure-app-service/
+I used some of the PowerShell scripts like and parts of the ARM template for the web app to get SonarQube running on a PaaS service.
+
+**Repository:** https://github.com/vanderby/SonarQube-AzureAppService  
+**Blog Post:** https://devblogs.microsoft.com/premier-developer/sonarqube-hosted-on-azure-app-service/
 
 ### SonarQube AAD Authentication Plugin by [The ALM Rangers]()
-Created by the ALM rangers and used to secure the SonarQube instance with Azure AD.  
-Repository:https://github.com/hkamel/sonar-auth-aad  
-Blog Post: https://blogs.msdn.microsoft.com/visualstudioalmrangers/2016/03/29/azure-active-directory-aad-authentication-plug-in-for-sonarqube/  
-Channel 9 Video: https://channel9.msdn.com/Series/Visual-Studio-ALM-Rangers-Demos/Azure-Active-Directory-AAD-Authentication-Plug-in-for-SonarQube  
+Created by the ALM rangers and used to secure the SonarQube instance with Azure AD.
+
+**Repository:** https://github.com/hkamel/sonar-auth-aad  
+**Blog Post:** https://blogs.msdn.microsoft.com/visualstudioalmrangers/2016/03/29/azure-active-directory-aad-authentication-plug-in-for-sonarqube/  
+**Channel 9 Video:** https://channel9.msdn.com/Series/Visual-Studio-ALM-Rangers-Demos/Azure-Active-Directory-AAD-Authentication-Plug-in-for-SonarQube  
