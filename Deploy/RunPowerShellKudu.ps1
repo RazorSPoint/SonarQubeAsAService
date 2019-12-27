@@ -34,9 +34,13 @@ $SqlDatabaseAdmin,
 [string]
 $SqlDatabaseAdminPassword)
 
+
+$webApp = Get-AzWebApp -Name $WebsiteName
+
 $creds = Invoke-AzResourceAction `
 -ResourceType "Microsoft.Web/sites/config" `
 -ResourceName "$WebsiteName/publishingcredentials" `
+-ResourceGroupName $webApp.ResourceGroup `
 -Action list -ApiVersion 2015-08-01 -Force
 
 $username = $creds.Properties.PublishingUserName
