@@ -6,10 +6,10 @@ This repository should give you the possibility to automatically deploy SonarQub
 
 These are the steps need to deploy the solution. If you know how to do it, then go forward. Otherwise I linked the explanation to the sections further below.
 
-1. [Register Azure AAD App]()
-2. [Create a project on Azure DevOps]()
-3. [Create Variable group]()
-4. [Create a Service Connection in your Project]()
+1. [Register Azure AAD App](#Authentication-with-Azure-AAD)
+2. [Create a project on Azure DevOps](#Create-a-Azure-DevOps-Project)
+3. [Create a Service Connection in your Project](#Create-a-Service-Connection)
+4. [Create Variable group](#Create-a-Variable-Group)
 5. [Integrate Pipeline into Azure DevOps]()
 6. Run Pipeline
 7. Add SonarQube license key
@@ -44,7 +44,6 @@ In order to use this pipeline, you [need an organization](https://docs.microsoft
 
 Create a service connection being used for the pipeline. Check the microsoft documentation article for [Creating a service connection](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#create-a-service-connection)
 
-[!IMPORTANT]
 > **Important:** In order to be able to create a connection to your Azure tenant, you need to have the permission to register applications in your tenant and you must have Owner permissions on your target subscription. If this is blocked in your tenant, you must ask an administrator. [The documentation can give](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/connect-to-azure?view=azure-devops#create-an-azure-resource-manager-service-connection-with-an-existing-service-principal) a more elaborate explanation.
 
 ## Create a Variable Group
@@ -53,7 +52,7 @@ In order that the project works you need to [create a variable group](https://do
 You find them under the following url pattern, where `{organization}` is your organization and `{project}` is your project name.
 
 ```HTTP
-https://dev.azure.com/{organization/{project}/_library?itemType=VariableGroups
+https://dev.azure.com/{organization}/{project}/_library?itemType=VariableGroups
 ```
 
 Create a variable group with the name "SonarQube as a Service" (exactly with this name!) and give it a description.
@@ -71,6 +70,13 @@ Then create the following variables.
 
 explain the pipeline
 
-# References
+# Shoutouts and References
 
-source references
+### SonarQube PowerShell cmdlets by [Razvan Stefan Hurhui](https://github.com/Razvanxp)
+Used some of the cmdets for accessing the SonarQube api.
+Repository: https://github.com/Razvanxp/SonarQubePS
+
+### SonarQube on a WebApp basic idea by [Nathan Vanderby (Microsoft)](https://github.com/vanderby)
+I used some of the PowerShell scripts like and parts of the ARM template for the web app to get SonarQube running on a PaaS service.
+Repository: https://github.com/vanderby/SonarQube-AzureAppService
+Blog Post: https://devblogs.microsoft.com/premier-developer/sonarqube-hosted-on-azure-app-service/

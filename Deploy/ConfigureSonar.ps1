@@ -1,5 +1,3 @@
-#https://github.com/Razvanxp/SonarQubePS/blob/master/SQFramework.psm1
-
 <#
  .SYNOPSIS
  Configures the sonarqube after initial installation.
