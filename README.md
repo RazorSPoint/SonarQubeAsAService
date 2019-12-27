@@ -22,6 +22,8 @@ The idea is to provide a solution ready to use even in your company or for priva
 
 These are the steps need to deploy the solution. If you know how to do it, then go forward. Otherwise I linked the explanation to the sections further below.
 
+
+
 1. [Register Azure AAD App](#Authentication-with-Azure-AAD)
 2. [Create a project on Azure DevOps](#Create-a-Azure-DevOps-Project)
 3. [Create a Service Connection in your Project](#Create-a-Service-Connection)
@@ -103,7 +105,7 @@ Then create the following variables.
 |SubscriptionGuid     | subscription id where the resources are deployed to        |  no       |
 |SuffixName     |  unique string appended to the resource names       |     no    |
 
-### Adjust Pipeline Variables
+### Pipeline Variables
 
 The following variables are defined in the pipeline.
 
@@ -116,7 +118,6 @@ The following variables are defined in the pipeline.
 |ResourceGroup     |  name of the resource group to deploy to      |
 |SkuCapacity     |  horizontal scale of the web app       |
 |SkuSize     |  vertical scale size of the web app       |
-
 
 ## Shoutouts and References
 
