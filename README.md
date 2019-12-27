@@ -1,6 +1,18 @@
 # Sonar Qube as a Service
 
-This repository should give you the possibility to automatically deploy SonarQube with Azure SQL on a WebApp deploy via Azure DevOps Pipelines
+This repository should give you the possibility to automatically deploy SonarQube with Azure SQL on a WebApp deploy via Azure DevOps Pipelines.
+
+When you are in an enterprise environment or you have very strict rules when it comes to intellectual property, then you might not want to use cloud services without a proper NDA or you do want to limit the service provider that you use. In case of SonarQube the SaaS equivalent is SonarCloud. SonarCloud is hosted by SonarSource in their own cloud environment in AWS. But you have no control over it.
+
+Maybe you want to still use this tool in the cloud, but want to host it in Azure. This solution gives you the possibility to leverage PaaS services only and setup the whole solution automatically. In this case you solve several problems:
+
+* disaster recovery
+* fast deployment
+* multiple deployments
+* all automatically
+* best practices for infrastructure, security and governance
+
+The idea is to provide a solution ready to use even in your company or for private use. You might even only want to evaluate SonarQube for yourself without setting it up with a lot of effort.
 
 ## Get Started
 
@@ -14,17 +26,28 @@ These are the steps need to deploy the solution. If you know how to do it, then 
 6. Run Pipeline
 7. Add SonarQube license key
 
-# Architecture
+## Architecture
 
-explain involved architecture
+The architecture allows PaaS (platform as a service) only to leverage Azure service to the fullest. The following resources are being created:
+
+* web app with app service plan
+* Azure sql server with a database
+* application insights getting telemetry from the web app
+
+See the image below to get an impression of the overall architecture.
 
 ![arm-template-architecture.png](Images/arm-template-architecture.png)
 
-# ARM Template
+The architecture tries to follow best practices for security.
+Also the access to SonarQube is restricted to Azure AD accounts only.
+
+### ARM Template
 
 show arm template parts and explain parameters
 
-## Deploy Infrastructure Only
+### Deploy Infrastructure Only
+
+If you want to deploy only the infrastructure directly over the portal, you can use the deploy buttons.
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FRazorSPoint%2FSonarQubeAsAService%2Fmaster%2FARM%2Fsonar.azuredeploy.json" target="_blank">
     <img src="https://raw.githubusercontent.com/RazorSPoint/SonarQubeAsAService/master/Images/deploytoazure.png"/>
@@ -32,21 +55,29 @@ show arm template parts and explain parameters
     <img src="https://raw.githubusercontent.com/RazorSPoint/SonarQubeAsAService/master/Images/visualizebutton.png"/>
 </a>
 
-# Authentication with Azure AAD
+## Authentication with Azure AAD
 
-# Pipeline
+You need an application that will be used to authenticate any user against the SonarQube with only AAD accounts. In order to do so, you need to [register an AAD application](https://docs.microsoft.com/en-us/graph/auth-register-app-v2) in your Azure tenant.
 
-## Create a Azure DevOps Project
+The information you need with the pipeline are the following:
+
+* app id
+* app secret
+* tenant id
+
+## Pipeline
+
+### Create a Azure DevOps Project
 
 In order to use this pipeline, you [need an organization](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/create-organization?view=azure-devops). If you have one, then [create a new project](https://docs.microsoft.com/en-us/azure/devops/organizations/projects/create-project?view=azure-devops&tabs=preview-page#create-a-project).
 
-## Create a Service Connection
+### Create a Service Connection
 
 Create a service connection being used for the pipeline. Check the microsoft documentation article for [Creating a service connection](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#create-a-service-connection)
 
 > **Important:** In order to be able to create a connection to your Azure tenant, you need to have the permission to register applications in your tenant and you must have Owner permissions on your target subscription. If this is blocked in your tenant, you must ask an administrator. [The documentation can give](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/connect-to-azure?view=azure-devops#create-an-azure-resource-manager-service-connection-with-an-existing-service-principal) a more elaborate explanation.
 
-## Create a Variable Group
+### Create a Variable Group
 
 In order that the project works you need to [create a variable group](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#create-a-variable-group) in your project.
 You find them under the following url pattern, where `{organization}` is your organization and `{project}` is your project name.
@@ -66,11 +97,11 @@ Then create the following variables.
 |SubscriptionGuid     | subscription id where the resources are deployed to        |  no       |
 |SuffixName     |  unique string appended to the resource names       |     no    |
 
-## Adjust Pipeline Variables
+### Adjust Pipeline Variables
 
 explain the pipeline
 
-# Shoutouts and References
+## Shoutouts and References
 
 ### SonarQube PowerShell cmdlets by [Razvan Stefan Hurhui](https://github.com/Razvanxp)
 Used some of the cmdets for accessing the SonarQube api.
