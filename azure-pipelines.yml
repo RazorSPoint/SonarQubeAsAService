@@ -3,7 +3,7 @@ name: $(Build.BuildID)
 trigger: none
 
 variables:
-- group: 'Sonar Qube as a Service'
+- group: 'SonarQube as a Service'
 
 - name: HostingPlan
   value: 'asp-SonarHosting$(SuffixName)'
