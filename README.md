@@ -8,8 +8,6 @@ When you are in an enterprise environment or you have very strict rules when it 
 
 Maybe you want to still use this tool in the cloud. This solution gives you the possibility to leverage PaaS services in Azure only and setup the whole solution automatically. The solution gives you the possibility for somebody who wants to implement something like "Static Code Analysis as a Service".
 
-![](Images/2019-12-27-18-33-30.png | width=200)
-
 In this case you solve several problems:
 
 * disaster recovery
@@ -72,6 +70,8 @@ The information you need with the pipeline are the following:
 * tenant id
 
 ## Pipeline
+
+![](Images/2019-12-27-18-33-30.png)
 
 ### Create a Azure DevOps Project
 
