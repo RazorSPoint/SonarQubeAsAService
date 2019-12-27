@@ -1,4 +1,27 @@
+<#
+ .SYNOPSIS
+ Starts the PowerShell script on the web app via Kudu.
+ 
+ .DESCRIPTION
+ Starts the PowerShell script on the web app via Kudu. Kudu is being used to trigger the deployment script to install SonarQube on the web app.
+ 
+ .PARAMETER WebsiteName
+ Name of the web app to run the deployment script
 
+ .PARAMETER SqlServerName
+ Base name of the SQL server (not the URL!).
+
+ .PARAMETER SqlDatabase
+ Name of the SQL database.
+
+ .PARAMETER SqlDatabaseAdmin
+ SQL login name of the admin.
+
+ .PARAMETER SqlDatabaseAdminPassword
+ SQL login password of the admin.
+
+#>
+[CmdletBinding()]
 param(
 [string]
 $WebsiteName,
@@ -9,12 +32,9 @@ $SqlDatabase,
 [string]
 $SqlDatabaseAdmin,
 [string]
-$SqlDatabaseAdminPassword,
-[string]
-$ResourceGroupName)
+$SqlDatabaseAdminPassword)
 
 $creds = Invoke-AzResourceAction `
--ResourceGroupName $ResourceGroupName `
 -ResourceType "Microsoft.Web/sites/config" `
 -ResourceName "$WebsiteName/publishingcredentials" `
 -Action list -ApiVersion 2015-08-01 -Force

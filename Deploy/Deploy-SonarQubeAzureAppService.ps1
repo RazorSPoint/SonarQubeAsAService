@@ -1,10 +1,38 @@
+<#
+ .SYNOPSIS
+ Is downloading sonarqube, unpacking it and then configuring the properties file with the given database information
+ 
+ .DESCRIPTION
+ Is downloading sonarqube, unpacking it and then configuring the properties file with the given database information
+ 
+ .PARAMETER SqlServerName
+ Base name of the SQL server (not the URL!).
+
+ .PARAMETER SqlDatabase
+ Name of the SQL database.
+
+ .PARAMETER SqlDatabaseAdmin
+ SQL login name of the admin.
+
+ .PARAMETER SqlDatabaseAdminPassword
+ SQL login password of the admin.
+
+.PARAMETER InstallationDirectory
+ Directory to where the SonarQube is supposed to be installed on the server.
+
+#>
+[CmdletBinding()]
 param(
+    [Parameter(Mandatory = $true)]
     [string]
     $SqlServerName,
+    [Parameter(Mandatory = $true)]
     [string]
     $SqlDatabase,
+    [Parameter(Mandatory = $true)]
     [string]
     $SqlDatabaseAdmin,
+    [Parameter(Mandatory = $true)]
     [string]
     $SqlDatabaseAdminPassword,
     [string]
@@ -12,6 +40,17 @@ param(
 )
 
 function Get-SonarQube ($DestinationPath) {
+    <#
+    .SYNOPSIS
+    Is downloading sonarqube from the official source, unpacking it and deleting the downloaded package file
+    
+    .DESCRIPTION
+    Is downloading sonarqube from the official source, unpacking it and deleting the downloaded package file
+    
+    .PARAMETER DestinationPath
+    Directory to where the SonarQube is supposed to be installed on the server.
+
+    #>
     
     Write-Output 'Getting a list of downloads'
     $downloadSource = 'https://binaries.sonarsource.com/CommercialDistribution/sonarqube-enterprise/'
@@ -48,6 +87,29 @@ function Get-SonarQube ($DestinationPath) {
 }
 
 function Update-SonarConfig($ConfigFilePath, $SqlServerName, $SqlDatabase, $SqlDatabaseAdmin, $SqlDatabaseAdminPassword) {
+        <#
+    .SYNOPSIS
+    Is updating the sonarqube porperties file with the given parameters
+    
+    .DESCRIPTION
+    Is updating the sonarqube porperties file with the given parameters
+    
+    .PARAMETER ConfigFilePath
+    Path to the template of sonar.properties file.
+     
+    .PARAMETER SqlServerName
+    Base name of the SQL server (not the URL!).
+
+    .PARAMETER SqlDatabase
+    Name of the SQL database.
+
+    .PARAMETER SqlDatabaseAdmin
+    SQL login name of the admin.
+
+    .PARAMETER SqlDatabaseAdminPassword
+    SQL login password of the admin.
+
+    #>
     
     Write-Output 'Searching for sonar.properties files to overwrite'
     $propFiles = Get-ChildItem  -File "$ConfigFilePath/sonar.properties" -Recurse

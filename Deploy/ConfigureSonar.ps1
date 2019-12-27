@@ -1,5 +1,30 @@
 #https://github.com/Razvanxp/SonarQubePS/blob/master/SQFramework.psm1
 
+<#
+ .SYNOPSIS
+ Configures the sonarqube after initial installation.
+ 
+ .DESCRIPTION
+ Configures the sonarqube after initial installation. Installs plugins and sets policies defined in the script.
+ 
+ .PARAMETER WebAppName
+ Name of the web app where SonarQube is running
+
+ .PARAMETER AdminUser
+ Name of the admin user on SonarQube
+
+ .PARAMETER AdminPassword
+ Password of the admin user on SonarQube
+
+ .PARAMETER AadTenantId
+ ID of the Azure tenant where the SonarQube should authenticate against
+
+.PARAMETER AadClientId
+App Id of the registered AAD application.
+
+.PARAMETER AadClientSecret
+App secret of the registered AAD application.
+#>
 [CmdletBinding(DefaultParameterSetName = 'IntegratedLogin')]
 param (
     [string]
