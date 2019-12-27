@@ -105,7 +105,18 @@ Then create the following variables.
 
 ### Adjust Pipeline Variables
 
-explain the pipeline
+The following variables are defined in the pipeline.
+
+|Name  |Description  |
+|---------|---------|
+|HostingPlan     |  name of the app service plan       |
+|SqlDb     |    name of the sql database     |
+|SqlServer     |  name of the sql server       |
+|Website     |   name of the web app     |
+|ResourceGroup     |  name of the resource group to deploy to      |
+|SkuCapacity     |  horizontal scale of the web app       |
+|SkuSize     |  vertical scale size of the web app       |
+
 
 ## Shoutouts and References
 
