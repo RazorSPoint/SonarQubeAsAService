@@ -2,9 +2,15 @@
 
 This repository should give you the possibility to automatically deploy SonarQube with Azure SQL on a WebApp deploy via Azure DevOps Pipelines.
 
-When you are in an enterprise environment or you have very strict rules when it comes to intellectual property, then you might not want to use cloud services without a proper NDA or you do want to limit the service provider that you use. In case of SonarQube the SaaS equivalent is SonarCloud. SonarCloud is hosted by SonarSource in their own cloud environment in AWS. But you have no control over it.
+## Use Case
 
-Maybe you want to still use this tool in the cloud, but want to host it in Azure. This solution gives you the possibility to leverage PaaS services only and setup the whole solution automatically. In this case you solve several problems:
+When you are in an enterprise environment or you have very strict rules when it comes to intellectual property, then you might not want to use cloud services without a proper NDA (non disclosure agreement) or you do want to limit the number of service provider that you use for different services. In case of SonarQube the SaaS equivalent is SonarCloud. SonarCloud is hosted by SonarSource in their own cloud environment in AWS. But you have no control over it.
+
+Maybe you want to still use this tool in the cloud. This solution gives you the possibility to leverage PaaS services in Azure only and setup the whole solution automatically. The solution gives you the possibility for somebody who wants to implement something like "Static Code Analysis as a Service".
+
+![](Images/2019-12-27-18-33-30.png | width=200)
+
+In this case you solve several problems:
 
 * disaster recovery
 * fast deployment
