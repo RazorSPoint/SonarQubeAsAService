@@ -118,7 +118,7 @@ stages:
               azureSubscription: '$(AzureConnectionServiceName)'
               ScriptType: 'FilePath'
               ScriptPath: '../InstallScripts/Deploy/RunPowerShellKudu.ps1'
-              ScriptArguments: '-WebsiteName "$(Website)" -SqlServerName "$(SqlServer)" -SqlDatabase "$(SqlDb)" -SqlDatabaseAdmin "$(SqlAdmin)" -SqlDatabaseAdminPassword "$(SqlAdminPassword)" -ResourceGroupName "$(ResourceGroup)"'
+              ScriptArguments: '-WebsiteName "$(Website)" -SqlServerName "$(SqlServer)" -SqlDatabase "$(SqlDb)" -SqlDatabaseAdmin "$(SqlAdmin)" -SqlDatabaseAdminPassword "$(SqlAdminPassword)"'
               azurePowerShellVersion: 'LatestVersion'
               pwsh: true              
           - task: AzureRmWebAppDeployment@4
