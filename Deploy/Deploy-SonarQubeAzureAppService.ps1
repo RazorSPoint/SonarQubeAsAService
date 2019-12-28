@@ -131,7 +131,7 @@ function Update-SonarConfig {
         $SqlDatabaseAdmin,
         [Parameter(Mandatory = $true)]
         [string]
-        $SqlDatabaseAdminPassword,
+        $SqlDatabaseAdminPassword
     )
     <#
     .SYNOPSIS
