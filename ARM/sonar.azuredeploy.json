@@ -200,7 +200,7 @@
                 },
                 // split the app config settings into seperate objects to seperate on what is being configured
                   {
-                    "name": "SonarQubeSettings",
+                    "name": "appsettings",
                     "type": "config",
                     "apiVersion": "2016-08-01",
                     "dependsOn": [
