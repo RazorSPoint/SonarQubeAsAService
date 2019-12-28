@@ -177,7 +177,7 @@ function Get-SQInfo {
         You can be creative, try diferent combinations. You can also see the examples.
     .EXAMPLE
         $status = Get-SonarQubeInfo -serverStatus
-        if ($status -eq "UP") {Write-Output "Your sonarqube server is up, good job!"}
+        if ($status -eq "UP") {Write-Information "Your sonarqube server is up, good job!"}
     #>
     param(
         [Parameter(ParameterSetName = "serverVersion", Mandatory = $True)]
@@ -223,7 +223,7 @@ function Wait-SQStart {
     #>
     
     if (!(Get-Command Get-SQInfo)) {
-        Write-Output "Did not found prerequisite cmdlet, stoping execution"
+        Write-Information "Did not found prerequisite cmdlet, stoping execution"
         exit
     }
 
@@ -233,11 +233,11 @@ function Wait-SQStart {
         $status = Get-SQInfo -serverStatus 
 
         switch ($status) {
-            'UP' { Write-Output "SonarQube status: $status SonarQube Online!" ; $started = $true }
-            'DOWN' { Write-Output "SonarQube is down for some reason, please review the logs for details"; exit }
-            { $_ -in 'STARTING', 'RESTARTING', 'DB_MIGRATION_RUNNING' } { Write-Output "SonarQube status: $status, waiting for SonarQube service to start.." ; Start-Sleep -Seconds 5 }
-            { $_ -in 'DB_MIGRATION_NEEDED' } { Write-Output "Your SonarQube needs a dbschema migration, stopping"; exit }
-            { $_ -in 'Error' } { Write-Output "SonarQube status: $status, waiting for SonarQube service to start.." ; Start-Sleep -Seconds 10 }
+            'UP' { Write-Information "SonarQube status: $status SonarQube Online!" ; $started = $true }
+            'DOWN' { Write-Information "SonarQube is down for some reason, please review the logs for details"; exit }
+            { $_ -in 'STARTING', 'RESTARTING', 'DB_MIGRATION_RUNNING' } { Write-Information "SonarQube status: $status, waiting for SonarQube service to start.." ; Start-Sleep -Seconds 5 }
+            { $_ -in 'DB_MIGRATION_NEEDED' } { Write-Information "Your SonarQube needs a dbschema migration, stopping"; exit }
+            { $_ -in 'Error' } { Write-Information "SonarQube status: $status, waiting for SonarQube service to start.." ; Start-Sleep -Seconds 10 }
         }
 
     }
@@ -269,39 +269,118 @@ function Restart-SQServer {
         $null = Invoke-SonarApiCall -ApiUrl "api/system/restart" -Method Post
     }
 
-    Write-Output "Restarting SonarQube server, please wait.."
+    Write-Information "Restarting SonarQube server, please wait.."
 }
 
-
-function Initialize-SQConfiguration {
-    [CmdletBinding(DefaultParameterSetName = 'IntegratedLogin')]
+function New-SQAdmin {
+    <#
+    .SYNOPSIS
+        Creates a new admin account.
+    .DESCRIPTION
+        Creates a new admin account.
+    #>
+    [CmdletBinding()]
     param (
         [string]
-        [Parameter(ParameterSetName = 'AzureADLogin')]
-        [Parameter(ParameterSetName = 'IntegratedLogin')]
+        $AdminLoginMail,
+        [string]
+        $AdminPassword,
+        [string]
+        $DisplayName,
+        [string]
+        $IsLocal
+    )
+
+    Write-Information "Creating a new admin user $AdminLoginMail"
+
+    $aadAdminUser = @{
+        login= $AdminLoginMail
+        name= $DisplayName
+        email= $AdminLoginMail
+        active= "true"
+        local= "false"
+    }
+
+    $null = Invoke-SonarApiCall -ApiUrl "api/users/create" -Method Post -Body $aadAdminUser
+    $null = Add-SQUserToGroup -LoginName $AdminLoginMail -GroupName "sonar-administrators"
+
+}
+
+function Add-SQUserToGroup {
+    <#
+    .SYNOPSIS
+        Adds a user to a group.
+    .DESCRIPTION
+        Adds a user to a group.
+    #>
+    [CmdletBinding()]
+    param (
+        [string]
+        $LoginName,
+        [string]
+        $GroupName
+    )
+
+    Write-Information "Adding user $LoginName to group $GroupName"
+
+    $userToAdd = @{
+          login = $LoginName
+          name = $GroupName        
+    }
+
+    $null = Invoke-SonarApiCall -ApiUrl "api/user_groups/add_user" -Method Post -Body $userToAdd
+
+}
+
+function Disable-SQUser {
+    <#
+    .SYNOPSIS
+        Disable a user.
+    .DESCRIPTION
+        Disable a user.
+    #>
+    [CmdletBinding()]
+    param (
+        [string]
+        $LoginName
+    )
+
+    Write-Information "Deactivating a user $LoginName"
+
+    $userToAdd = @{
+          "login"= $LoginName      
+    }
+
+    $null = Invoke-SonarApiCall -ApiUrl "api/users/deactivate" -Method Post -Body $userToAdd
+
+}
+
+function Initialize-SQConfiguration {
+    [CmdletBinding()]
+    param (
+        [string]
         $WebAppName = "wa-sonarhosting",
         [string]
-        [Parameter(ParameterSetName = 'IntegratedLogin')]
-        [Parameter(ParameterSetName = 'AzureADLogin')]
-        $AdminUser = 'admin',
+        [Parameter(Mandatory = $true)]
+        $AdminUser,
         [string]
-        [Parameter(ParameterSetName = 'IntegratedLogin')]
-        [Parameter(ParameterSetName = 'AzureADLogin')]
-        $AdminPassword = 'admin',
-        [Parameter(Mandatory = $true, ParameterSetName = 'AzureADLogin')]
+        [Parameter(Mandatory = $true)]
         [string]
         $AadTenantId,
-        [Parameter(Mandatory = $true, ParameterSetName = 'AzureADLogin')]
+        [Parameter(Mandatory = $true)]
         [string]
         $AadClientId,
-        [Parameter(Mandatory = $true, ParameterSetName = 'AzureADLogin')]
+        [Parameter(Mandatory = $true)]
         [string]
         $AadClientSecret
     )
 
     $SonarBaseUrl = "https://$WebAppName.azurewebsites.net"
 
-    Connect-SQServer -User $AdminUser -Password $AdminPassword -BaseUrl $SonarBaseUrl
+    #after first installation the admin login is 'admin:admin'
+    $defaultAdmin = "admin"
+    $defaultPassword = "admin"
+    Connect-SQServer -User $defaultAdmin -Password $defaultPassword -BaseUrl $SonarBaseUrl
     Wait-SQStart -Uri $SonarBaseUrl
 
     #only allow logged in users to see something
@@ -311,8 +390,7 @@ function Initialize-SQConfiguration {
     if ($PsCmdlet.ParameterSetName -eq "AzureADLogin") {
 
         # install azure aad plugin
-        $needsRestart = Install-SQPlugin -Name "authaad"
-        $needsRestart = $true
+        #$needsRestart = Install-SQPlugin -Name "authaad"
 
         if ($needsRestart ) {
             Restart-SQServer -WebAppName $WebAppName
@@ -326,6 +404,10 @@ function Initialize-SQConfiguration {
         Set-SQSetting -Key "sonar.auth.aad.enableGroupsSync" -Value "false"
         Set-SQSetting -Key "sonar.auth.aad.loginStrategy" -Value "Same as Azure AD login"
         Set-SQSetting -Key "sonar.auth.aad.enabled" -Value "true"
+
+        #create a new admin user with custom password
+        New-SQAdmin -AdminLoginMail $AdminUser -DisplayName $AdminPassword -IsLocal $false
+        Disable-SQUser -LoginName "admin"
     }
 }
 
