@@ -143,4 +143,12 @@ Created by the ALM rangers and used to secure the SonarQube instance with Azure 
 
 **Repository:** https://github.com/hkamel/sonar-auth-aad  
 **Blog Post:** https://blogs.msdn.microsoft.com/visualstudioalmrangers/2016/03/29/azure-active-directory-aad-authentication-plug-in-for-sonarqube/  
-**Channel 9 Video:** https://channel9.msdn.com/Series/Visual-Studio-ALM-Rangers-Demos/Azure-Active-Directory-AAD-Authentication-Plug-in-for-SonarQube  
+**Channel 9 Video:** https://channel9.msdn.com/Series/Visual-Studio-ALM-Rangers-Demos/Azure-Active-Directory-AAD-Authentication-Plug-in-for-SonarQube
+
+### ARM Template Viewer by [Ben Coleman](https://github.com/benc-uk)
+For the visualization in the architecture documentation I used the VS-Code extension to display the ARM template.
+It's much easier than doing the stuff yourself!
+
+**Extension:** https://marketplace.visualstudio.com/items?itemName=bencoleman.armview&ssr=false#overview  
+**Repsotiroy:** https://github.com/benc-uk/armview-vscode  
+**Blog:** https://benc.dev/blog/
