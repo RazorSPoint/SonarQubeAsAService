@@ -54,7 +54,7 @@
             "metadata": {
                 "description": "Describes plan's instance count"
             }
-        },        
+        },
         "sqlAdministratorLogin": {
             "type": "string",
             "metadata": {
@@ -67,6 +67,23 @@
                 "description": "The password of the admin user of the SQL Server"
             }
         },
+        "SonarQube Edition": {
+            "type": "string",
+            "defaultValue": "Community",
+            "allowedValues": [
+                "Community",
+                "Developer",
+                "Enterprise",
+                "Data Center"
+            ]
+        },
+        "SonarQube Version": {
+            "type": "string",
+            "defaultValue": "Latest",
+            "metadata": {
+                "description": "Specific version of SQ to download e.g. 7.9.1 or 8.0. Leave blank or set to 'Latest' for most recent version."
+            }
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -75,14 +92,15 @@
             }
         }
     },
-    "variables":{
+    "variables": {
         "uniqueSuffix": "[uniqueString(resourceGroup().id)]",
-        "uniqueHostingPlanName":"[concat(parameters('hostingPlanName'))]",
-        "uniqueWebSiteName":"[concat(parameters('webSiteName'))]",
-        "uniqueSqlserverName":"[concat(parameters('sqlserverName'))]",
-        "uniqueDatabaseName":"[concat(parameters('databaseName'))]"
+        "uniqueHostingPlanName": "[concat(parameters('hostingPlanName'))]",
+        "uniqueWebSiteName": "[concat(parameters('webSiteName'))]",
+        "uniqueSqlserverName": "[concat(parameters('sqlserverName'))]",
+        "uniqueDatabaseName": "[concat(parameters('databaseName'))]"
     },
-    "resources": [{
+    "resources": [
+        {
             "name": "[variables('uniqueSqlserverName')]",
             "type": "Microsoft.Sql/servers",
             "location": "[parameters('location')]",
@@ -95,7 +113,8 @@
                 "administratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]",
                 "version": "12.0"
             },
-            "resources": [{
+            "resources": [
+                {
                     "name": "[variables('uniqueDatabaseName')]",
                     "type": "databases",
                     "location": "[parameters('location')]",
@@ -105,13 +124,13 @@
                     "apiVersion": "2015-01-01",
                     "dependsOn": [
                         "[variables('uniqueSqlserverName')]"
-                    ],                   
+                    ],
                     "properties": {
                         "edition": "Standard",
                         "collation": "SQL_Latin1_General_CP1_CS_AS",
                         "maxSizeBytes": "1073741824",
                         "requestedServiceObjectiveName": "S1"
-                    }                                    
+                    }
                 },
                 {
                     "type": "firewallrules",
@@ -158,26 +177,48 @@
             },
             "properties": {
                 "name": "[variables('uniqueWebSiteName')]",
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('uniqueHostingPlanName'))]",              
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('uniqueHostingPlanName'))]",
                 "clientAffinityEnabled": false
             },
-            "resources": [{
-                "name": "web",
-                "type": "config",
-                "apiVersion": "2016-08-01",
-                "dependsOn": [
-                    "[resourceId('Microsoft.Web/sites', variables('uniqueWebSiteName'))]"
-                ],
-                "tags":{
-                    "displayName": "Java TOMCAT 9.0"
+            "resources": [
+                {
+                    "name": "web",
+                    "type": "config",
+                    "apiVersion": "2016-08-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', variables('uniqueWebSiteName'))]"
+                    ],
+                    "tags": {
+                        "displayName": "Java TOMCAT 9.0"
+                    },
+                    "properties": {
+                        "alwaysOn": true,
+                        "javaVersion": "11",
+                        "javaContainer": "TOMCAT",
+                        "javaContainerVersion": "9.0"
+                    }
                 },
-                "properties": {
-                    "alwaysOn": true,
-                    "javaVersion": "11",
-                    "javaContainer": "TOMCAT",
-                    "javaContainerVersion": "9.0"
+                // split the app config settings into seperate objects to seperate on what is being configured
+                  {
+                    "name": "SonarQubeSettings",
+                    "type": "config",
+                    "apiVersion": "2016-08-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', variables('uniqueWebSiteName'))]"
+                    ],
+                    "tags": {
+                        "displayName": "SonarQube Settings"
+                    },
+                    "properties": {
+                        "SonarQubeEdition": "[parameters('SonarQube Edition')]",
+                        "SonarQubeVersion": "[parameters('SonarQube Version')]",
+                        "SqlServerName": "[variables('uniqueSqlserverName')]",
+                        "SqlDatabase": "[variables('uniqueDatabaseName')]",
+                        "SqlDatabaseAdmin": "[parameters('sqlAdministratorLogin')]",
+                        "SqlDatabaseAdminPassword": "[parameters('sqlAdministratorLoginPassword')]"
+                    }
                 }
-            }]
+            ]
         },
         {
             "apiVersion": "2015-04-01",
@@ -192,51 +233,54 @@
                 "[variables('uniqueHostingPlanName')]"
             ],
             "properties": {
-                "profiles": [{
-                    "name": "Default",
-                    "capacity": {
-                        "minimum": 1,
-                        "maximum": 2,
-                        "default": 1
-                    },
-                    "rules": [{
-                            "metricTrigger": {
-                                "metricName": "CpuPercentage",
-                                "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', variables('uniqueHostingPlanName'))]",
-                                "timeGrain": "PT1M",
-                                "statistic": "Average",
-                                "timeWindow": "PT10M",
-                                "timeAggregation": "Average",
-                                "operator": "GreaterThan",
-                                "threshold": 80.0
-                            },
-                            "scaleAction": {
-                                "direction": "Increase",
-                                "type": "ChangeCount",
-                                "value": 1,
-                                "cooldown": "PT10M"
-                            }
+                "profiles": [
+                    {
+                        "name": "Default",
+                        "capacity": {
+                            "minimum": 1,
+                            "maximum": 2,
+                            "default": 1
                         },
-                        {
-                            "metricTrigger": {
-                                "metricName": "CpuPercentage",
-                                "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', variables('uniqueHostingPlanName'))]",
-                                "timeGrain": "PT1M",
-                                "statistic": "Average",
-                                "timeWindow": "PT1H",
-                                "timeAggregation": "Average",
-                                "operator": "LessThan",
-                                "threshold": 60.0
+                        "rules": [
+                            {
+                                "metricTrigger": {
+                                    "metricName": "CpuPercentage",
+                                    "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', variables('uniqueHostingPlanName'))]",
+                                    "timeGrain": "PT1M",
+                                    "statistic": "Average",
+                                    "timeWindow": "PT10M",
+                                    "timeAggregation": "Average",
+                                    "operator": "GreaterThan",
+                                    "threshold": 80.0
+                                },
+                                "scaleAction": {
+                                    "direction": "Increase",
+                                    "type": "ChangeCount",
+                                    "value": 1,
+                                    "cooldown": "PT10M"
+                                }
                             },
-                            "scaleAction": {
-                                "direction": "Decrease",
-                                "type": "ChangeCount",
-                                "value": 1,
-                                "cooldown": "PT1H"
+                            {
+                                "metricTrigger": {
+                                    "metricName": "CpuPercentage",
+                                    "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', variables('uniqueHostingPlanName'))]",
+                                    "timeGrain": "PT1M",
+                                    "statistic": "Average",
+                                    "timeWindow": "PT1H",
+                                    "timeAggregation": "Average",
+                                    "operator": "LessThan",
+                                    "threshold": 60.0
+                                },
+                                "scaleAction": {
+                                    "direction": "Decrease",
+                                    "type": "ChangeCount",
+                                    "value": 1,
+                                    "cooldown": "PT1H"
+                                }
                             }
-                        }
-                    ]
-                }],
+                        ]
+                    }
+                ],
                 "enabled": false,
                 "name": "[concat(variables('uniqueHostingPlanName'), '-', resourceGroup().name)]",
                 "targetResourceUri": "[resourceId('Microsoft.Web/serverfarms', variables('uniqueHostingPlanName'))]"
