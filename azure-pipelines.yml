@@ -140,7 +140,7 @@ stages:
               azureSubscription: '$(AzureConnectionServiceName)'
               ScriptType: 'FilePath'
               ScriptPath: '../InstallScripts/Deploy/ConfigureSonar.ps1'
-              ScriptArguments: '-WebAppName "$(Website)" -AdminUser "admin" -AdminPassword "admin" -AadTenantId "hhhj" -AadClientId "fff" -AadClientSecret "ddd"'
+              ScriptArguments: '-WebAppName "$(Website)" -AdminUser "$(SonarAdmin)" -AdminPassword "$(SonarAdminPassword)" -AadTenantId "$(TenantId)" -AadClientId "$(SonarAppId)" -AadClientSecret "$(SonarAppSecret)"'
               azurePowerShellVersion: 'LatestVersion'
               pwsh: true
           
