@@ -26,7 +26,7 @@ function Get-SQDownloadUri {
         $Version
     )
 
-    Write-Output "Getting a list of downloads for $Edition edition."
+    Write-Information "Getting a list of downloads for $Edition edition."
     $downloadFolder = 'Distribution/sonarqube' # Community Edition
     $fileNamePart = 'sonarqube' # Community Edition
     switch ($Edition) {
@@ -48,7 +48,7 @@ function Get-SQDownloadUri {
     $downloadUri = ''
     $fileName = ''
     if (!$Version -or ($Version -ieq 'Latest')) {
-        Write-Output "Getting the latest version of $Edition edition."
+        Write-Information "Getting the latest version of $Edition edition."
         $allDownloads = Invoke-WebRequest -Uri $downloadSource -UseBasicParsing
         $zipFiles = $allDownloads[0].Links | Where-Object { $_.href.EndsWith('.zip') -and !($_.href.contains('alpha') -or $_.href.contains('RC')) }
 
@@ -60,7 +60,7 @@ function Get-SQDownloadUri {
         $fileName = $latestFile.href
     }
     else {
-        Write-Output "Using version $Version of $Edition edition."
+        Write-Information "Using version $Version of $Edition edition."
         $fileName = "$fileNamePart-$Version.zip"
         $downloadUri = "$downloadSource/$fileName"
     }
@@ -101,7 +101,8 @@ function Get-SonarQube {
     $downloadUri = Get-SQDownloadUri -Edition $Edition -Version $Version
 
     Write-Output "Downloading '$downloadUri'"
-    $outputFile = "$DestinationPath\$($latestFile.href)"
+    $fileName = $downloadUri | Split-Path -Leaf
+    $outputFile = "$DestinationPath\$($fileName)"
     Invoke-WebRequest -Uri $downloadUri -OutFile $outputFile -UseBasicParsing
     Write-Output "Done downloading file $outputFile"
 
