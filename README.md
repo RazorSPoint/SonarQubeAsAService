@@ -106,6 +106,10 @@ Then create the following variables.
 |SqlAdminPassword     | secure password of the sql admin       |  yes       |
 |SubscriptionGuid     | subscription id where the resources are deployed to        |  no       |
 |SuffixName     |  unique string appended to the resource names       |     no    |
+|SonarAdmin     |  ssid (mail) of the AAD user that should be added as the initial admin       |     no    |
+|SonarAppId     |  app id created in the AAD for authentication       |     no    |
+|SonarAppSecret     |  app secret created in the AAD for authentication       |     no    |
+|TenantId     |  tenant ID where the app was registered       |     no    |
 
 ### Pipeline Variables
 
