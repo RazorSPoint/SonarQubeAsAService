@@ -47,14 +47,16 @@ stages:
         deploymentMode: 'Validation'
 
     - task: CopyFiles@2
-      displayName: 'Copy Files to: AzureRessources Folder'
+      displayName: 'Copy ARM Files to: AzureRessources Folder'
       inputs:
         SourceFolder: ARM
         TargetFolder: '$(build.artifactstagingdirectory)/AzureRessources'
 
     - publish: $(build.artifactstagingdirectory)/AzureRessources
+      displayName: 'Publish ARM Files'
       artifact:  AzureRessources
     - task: CopyFiles@2
+      displayName: 'Copy Deploy and Run Scripts'
       inputs:
         Contents: |
           Deploy/**/*.ps1
@@ -64,6 +66,7 @@ stages:
         TargetFolder: '$(build.artifactstagingdirectory)/InstallScripts'
       
     - publish: $(build.artifactstagingdirectory)/InstallScripts
+      displayName: 'Publish Deploy and Run Scripts'
       artifact:  InstallScripts
 
 - stage: Test
