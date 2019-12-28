@@ -71,6 +71,8 @@ The information you need with the pipeline are the following:
 * app secret
 * tenant id
 
+You will also need to configure the reply URL for SonarQube. So figure out the web app URL you want to use before you deploy it. You can also [follow the registration process](To create the correct application, please [follow their documentation](https://github.com/hkamel/sonar-auth-aad/wiki/Setup#creating-the-sonarqube-application-in-azure).) described by the SonarQube plugin for AAD authentication.
+
 ## Pipeline
 
 ![](Images/2019-12-27-18-33-30.png)
