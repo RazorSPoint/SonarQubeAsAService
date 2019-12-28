@@ -11,9 +11,6 @@
  .PARAMETER AdminUser
  Name of the admin user on SonarQube
 
- .PARAMETER AdminPassword
- Password of the admin user on SonarQube
-
  .PARAMETER AadTenantId
  ID of the Azure tenant where the SonarQube should authenticate against
 
@@ -399,7 +396,7 @@ function Initialize-SQConfiguration {
         Set-SQSetting -Key "sonar.auth.aad.enabled" -Value "true"
 
         #create a new admin user with custom password
-        New-SQAdmin -AdminLoginMail $AdminUser -DisplayName $AdminPassword -IsLocal $false
+        New-SQAdmin -AdminLoginMail $AdminUser -DisplayName $AdminUser -IsLocal $false
         Disable-SQUser -LoginName "admin"
     }
 }
@@ -407,6 +404,5 @@ function Initialize-SQConfiguration {
 $InformationPreference = "Continue"
 
 Initialize-SQConfiguration `
-    -WebAppName $WebAppName `
-    -AdminUser $AdminUser -AdminPassword $AdminPassword `
+    -WebAppName $WebAppName -AdminUser $AdminUser `
     -AadTenantId $AadTenantId -AadClientId $AadClientId -AadClientSecret $AadClientSecret
