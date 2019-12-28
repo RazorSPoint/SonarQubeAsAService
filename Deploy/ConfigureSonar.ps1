@@ -377,28 +377,25 @@ function Initialize-SQConfiguration {
     Set-SQSetting -Key "sonar.forceAuthentication" -Value "true"
 
     #set settings for aad plugin
-    if ($PsCmdlet.ParameterSetName -eq "AzureADLogin") {
 
-        # install azure aad plugin
-        #$needsRestart = Install-SQPlugin -Name "authaad"
-
-        if ($needsRestart ) {
-            Restart-SQServer -WebAppName $WebAppName
-            Wait-SQStart -Uri $SonarBaseUrl
-        }
-        
-        Set-SQSetting -Key "sonar.core.serverBaseURL" -Value $SonarBaseUrl
-        Set-SQSetting -Key "sonar.auth.aad.tenantId" -Value $AadTenantId
-        Set-SQSetting -Key "sonar.auth.aad.clientId.secured" -Value $AadClientId
-        Set-SQSetting -Key "sonar.auth.aad.clientSecret.secured" -Value $AadClientSecret
-        Set-SQSetting -Key "sonar.auth.aad.enableGroupsSync" -Value "false"
-        Set-SQSetting -Key "sonar.auth.aad.loginStrategy" -Value "Same as Azure AD login"
-        Set-SQSetting -Key "sonar.auth.aad.enabled" -Value "true"
-
-        #create a new admin user with custom password
-        New-SQAdmin -AdminLoginMail $AdminUser -DisplayName $AdminUser -IsLocal $false
-        Disable-SQUser -LoginName "admin"
+    # install azure aad plugin
+    $needsRestart = Install-SQPlugin -Name "authaad"
+    if ($needsRestart ) {
+        Restart-SQServer -WebAppName $WebAppName
+        Wait-SQStart -Uri $SonarBaseUrl
     }
+    
+    Set-SQSetting -Key "sonar.core.serverBaseURL" -Value $SonarBaseUrl
+    Set-SQSetting -Key "sonar.auth.aad.tenantId" -Value $AadTenantId
+    Set-SQSetting -Key "sonar.auth.aad.clientId.secured" -Value $AadClientId
+    Set-SQSetting -Key "sonar.auth.aad.clientSecret.secured" -Value $AadClientSecret
+    Set-SQSetting -Key "sonar.auth.aad.enableGroupsSync" -Value "false"
+    Set-SQSetting -Key "sonar.auth.aad.loginStrategy" -Value "Same as Azure AD login"
+    Set-SQSetting -Key "sonar.auth.aad.enabled" -Value "true"
+
+    #create a new admin user with custom password
+    New-SQAdmin -AdminLoginMail $AdminUser -DisplayName $AdminUser -IsLocal $false
+    Disable-SQUser -LoginName "admin"
 }
 
 $InformationPreference = "Continue"
