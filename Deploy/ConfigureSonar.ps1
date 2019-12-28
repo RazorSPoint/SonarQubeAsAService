@@ -318,7 +318,8 @@ function Initialize-SQConfiguration {
             Restart-SQServer -WebAppName $WebAppName
             Wait-SQStart -Uri $SonarBaseUrl
         }
-
+        
+        Set-SQSetting -Key "sonar.core.serverBaseURL" -Value $SonarBaseUrl
         Set-SQSetting -Key "sonar.auth.aad.tenantId" -Value $AadTenantId
         Set-SQSetting -Key "sonar.auth.aad.clientId.secured" -Value $AadClientId
         Set-SQSetting -Key "sonar.auth.aad.clientSecret.secured" -Value $AadClientSecret
