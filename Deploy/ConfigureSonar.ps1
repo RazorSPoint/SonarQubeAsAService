@@ -23,27 +23,20 @@ App Id of the registered AAD application.
 .PARAMETER AadClientSecret
 App secret of the registered AAD application.
 #>
-[CmdletBinding(DefaultParameterSetName = 'IntegratedLogin')]
+[CmdletBinding()]
 param (
     [string]
-    [Parameter(ParameterSetName = 'AzureADLogin')]
-    [Parameter(ParameterSetName = 'IntegratedLogin')]
     $WebAppName = "wa-sonarhosting",
     [string]
-    [Parameter(ParameterSetName = 'IntegratedLogin')]
-    [Parameter(ParameterSetName = 'AzureADLogin')]
     $AdminUser = 'admin',
     [string]
-    [Parameter(ParameterSetName = 'IntegratedLogin')]
-    [Parameter(ParameterSetName = 'AzureADLogin')]
-    $AdminPassword = 'admin',
-    [Parameter(Mandatory = $true, ParameterSetName = 'AzureADLogin')]
+    [Parameter(Mandatory = $true)]
     [string]
     $AadTenantId,
-    [Parameter(Mandatory = $true, ParameterSetName = 'AzureADLogin')]
+    [Parameter(Mandatory = $true)]
     [string]
     $AadClientId,
-    [Parameter(Mandatory = $true, ParameterSetName = 'AzureADLogin')]
+    [Parameter(Mandatory = $true)]
     [string]
     $AadClientSecret
 )
