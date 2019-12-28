@@ -323,7 +323,7 @@ function Initialize-SQConfiguration {
         Set-SQSetting -Key "sonar.auth.aad.tenantId" -Value $AadTenantId
         Set-SQSetting -Key "sonar.auth.aad.clientId.secured" -Value $AadClientId
         Set-SQSetting -Key "sonar.auth.aad.clientSecret.secured" -Value $AadClientSecret
-        Set-SQSetting -Key "sonar.auth.aad.enableGroupsSync" -Value "true"
+        Set-SQSetting -Key "sonar.auth.aad.enableGroupsSync" -Value "false"
         Set-SQSetting -Key "sonar.auth.aad.loginStrategy" -Value "Same as Azure AD login"
         Set-SQSetting -Key "sonar.auth.aad.enabled" -Value "true"
     }
