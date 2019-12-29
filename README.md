@@ -22,7 +22,7 @@ The idea is to provide a solution ready to use even in your company or for priva
 
 These are the steps need to deploy the solution. If you know how to do it, then go forward. Otherwise I linked the explanation to the sections further below.
 
-
+![Alt text](Images/Architecture-SonarQubeAsAService.svg?sanitize=true)
 
 1. [Register Azure AAD App](#Authentication-with-Azure-AAD)
 2. [Create a project on Azure DevOps](#Create-a-Azure-DevOps-Project)
@@ -43,6 +43,8 @@ The architecture allows PaaS (platform as a service) only to leverage Azure serv
 See the image below to get an impression of the overall architecture.
 
 ![arm-template-architecture.png](Images/arm-template-architecture.png)
+
+
 
 The architecture tries to follow best practices for security.
 Also the access to SonarQube is restricted to Azure AD accounts only.
