@@ -34,16 +34,11 @@ These are the steps need to deploy the solution. If you know how to do it, then 
 
 ## Architecture
 
-The architecture allows PaaS (platform as a service) only to leverage Azure service to the fullest. The following resources are being created:
-
-* web app with app service plan
-* Azure sql server with a database
-* application insights getting telemetry from the web app
+The architecture allows PaaS (platform as a service) only to leverage Azure service to the fullest. 
 
 See the image below to get an impression of the overall architecture.
 
 ![Architecture](Images/Architecture-SonarQubeAsAService.svg?sanitize=true)
-
 
 The architecture tries to follow best practices for security.
 Also the access to SonarQube is restricted to Azure AD accounts only.
@@ -53,6 +48,20 @@ Also the access to SonarQube is restricted to Azure AD accounts only.
 The ARM template has the resource displayed below
 
 ![arm-template-architecture.png](Images/arm-template-architecture.png)
+
+The following resources are being created:
+
+* web app with app service plan
+  * managed identity created
+  * only https allowed
+* Azure sql server with a database
+  * managed identity created
+  * managed identity from web app has access
+  * only IP address from web app allowed to access
+  * database encryption by default
+* application insights getting telemetry from the web app
+* key vault for saving any secrets
+  * managed identities have access to key vault secrets
 
 ### Deploy Infrastructure Only
 
