@@ -30,8 +30,8 @@ variables:
   value: '1'
 - name: SkuSize
   value: 'S1'
-- name: UniqueString
-  value: '94e4bf'
+- name: TestRun
+  value: $[counter(variables['SuffixName'], 0)]
 
 stages:
 - stage: Build
@@ -99,15 +99,15 @@ stages:
             parameters:
               AzureConnectionServiceName: '$(AzureConnectionServiceName)'
               SubscriptionGuid: '$(SubscriptionGuid)'
-              KeyVaultResourceGroup: '$(ResourceGroupKeyVault)-$(UniqueString)'
+              KeyVaultResourceGroup: '$(ResourceGroupKeyVault)-$(TestRun)'
               KeyVaultObjectId: '$(KeyVaultObjectId)'
               sqAdminPassword: '$(SonarDefaultAdminPassword)'
-              KeyVault: '$(KeyVault)-$(UniqueString)'
-              ResourceGroup: '$(ResourceGroup)-$(UniqueString)'
-              HostingPlan: '$(HostingPlan)-$(UniqueString)'
-              Website: '$(Website)-$(UniqueString)'
-              SqlServer: '$(SqlServer)-$(UniqueString)'
-              SqlDb: '$(SqlDb)-$(UniqueString)'
+              KeyVault: '$(KeyVault)-$(TestRun)'
+              ResourceGroup: '$(ResourceGroup)-$(TestRun)'
+              HostingPlan: '$(HostingPlan)-$(TestRun)'
+              Website: '$(Website)-$(TestRun)'
+              SqlServer: '$(SqlServer)-$(TestRun)'
+              SqlDb: '$(SqlDb)-$(TestRun)'
               SkuSize: '$(SkuSize)'
               SkuCapacity: '$(SkuCapacity)'
               SqlAdmin: '$(SqlAdmin)'
