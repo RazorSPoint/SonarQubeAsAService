@@ -5,6 +5,7 @@ parameters:
   KeyVaultResourceGroup: ''
   KeyVaultObjectId: ''
   sqAdminPassword: ''
+  KeyVault: ''
   ResourceGroup: ''
   HostingPlan: ''
   Website: ''
@@ -28,7 +29,7 @@ steps:
       templateLocation: 'Linked artifact'
       csmFile: '../AzureRessources/keyvault.azuredeploy.json'
       csmParametersFile: '../AzureRessources/keyvault.azuredeploy.parameters.json'
-      overrideParameters: '-objectId "${{parameters.KeyVaultObjectId}}" -sqAdminPassword "${{parameters.sqAdminPassword}}"'
+      overrideParameters: '-objectId "${{parameters.KeyVaultObjectId}}" -sqAdminPassword "${{parameters.sqAdminPassword}}" -keyVaultName ${{parameters.KeyVault}}'
       deploymentMode: 'Incremental'
   - task: AzureResourceManagerTemplateDeployment@3
     displayName: "Deploy Infrastructure"

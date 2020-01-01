@@ -20,6 +20,8 @@ variables:
   value: 'sqlsrv-sonarhosting$(SuffixName)'
 - name: Website
   value: 'wa-SonarHosting$(SuffixName)'
+- name: KeyVault
+  value: 'kv-sonarqubesecrets$(SuffixName)'
 - name: ResourceGroup
   value: 'Rp-SonarQubeAsAService'
 - name: ResourceGroupKeyVault
@@ -100,6 +102,7 @@ stages:
               KeyVaultResourceGroup: '$(ResourceGroupKeyVault)-$(UniqueString)'
               KeyVaultObjectId: '$(KeyVaultObjectId)'
               sqAdminPassword: '$(SonarDefaultAdminPassword)'
+              KeyVault: '$(KeyVault)-$(UniqueString)'
               ResourceGroup: '$(ResourceGroup)-$(UniqueString)'
               HostingPlan: '$(HostingPlan)-$(UniqueString)'
               Website: '$(Website)-$(UniqueString)'
@@ -138,6 +141,7 @@ stages:
               KeyVaultResourceGroup: '$(ResourceGroupKeyVault)'
               KeyVaultObjectId: '$(KeyVaultObjectId)'
               sqAdminPassword: '$(SonarDefaultAdminPassword)'
+              KeyVault: '$(KeyVault)'
               ResourceGroup: '$(ResourceGroup)'
               HostingPlan: '$(HostingPlan)'
               Website: '$(Website)'
