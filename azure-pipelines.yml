@@ -90,7 +90,21 @@ stages:
             patterns: '**/*.json'
           - download: current
             displayName: Download InstallScripts
-            artifact: InstallScripts         
+            artifact: InstallScripts   
+          - task: AzureResourceManagerTemplateDeployment@3
+            displayName: "Deploy KeyVault"
+            inputs:
+              deploymentScope: 'Resource Group'
+              ConnectedServiceName: '$(AzureConnectionServiceName)'
+              subscriptionName: '$(SubscriptionGuid)'
+              action: 'Create Or Update Resource Group'
+              resourceGroupName: 'RG-GlobalKeyVault'
+              location: 'West Europe'
+              templateLocation: 'Linked artifact'
+              csmFile: '../AzureRessources/keyvault.azuredeploy.json'
+              csmParametersFile: '../AzureRessources/keyvault.azuredeploy.parameters.json'
+              overrideParameters: '-objectId "15e69730-3cca-4ca3-aaa8-81c5155ade6d" -sqAdminPassword "testpassword"'
+              deploymentMode: 'Incremental'
           - task: AzureResourceManagerTemplateDeployment@3
             displayName: "Deploy Infrastructure"
             inputs:
