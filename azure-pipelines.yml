@@ -6,6 +6,9 @@ trigger:
     include:
       - topic/*
 
+pr:
+  - master
+
 variables:
 - group: 'SonarQube as a Service'
 
@@ -76,7 +79,7 @@ stages:
 - stage: Test
   displayName: Test Deployment
   dependsOn: Build
-
+  condition: and(succeeded(), and(eq(variables['System.PullRequest.IsFork'], false),eq(variables['Build.SourceBranch'],'refs/heads/master')))
   jobs:
 
   - deployment: Deploy_ARM
