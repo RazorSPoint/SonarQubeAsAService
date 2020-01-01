@@ -1,6 +1,9 @@
 name: $(Build.BuildID)
 
-trigger: none
+trigger:
+  branches:
+    include:
+      - topic/*
 
 variables:
 - group: 'SonarQube as a Service'
