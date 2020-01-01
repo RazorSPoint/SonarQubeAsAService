@@ -75,9 +75,38 @@ stages:
     - publish: $(build.artifactstagingdirectory)/InstallScripts
       displayName: 'Publish Deploy and Run Scripts'
       artifact:  InstallScripts
+  - deployment: Test_ARM_Deployment_Phase
+    displayName: 'Test ARM Deployment'
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: Test ARM Deployment
+    strategy:
+       runOnce:
+        deploy:
+          steps:
+          - download: current
+            displayName: Download AzureRessources
+            artifact: AzureRessources
+            patterns: '**/*.json'
+          - template: Pipeline/deployArm.yml
+            parameters:
+              AzureConnectionServiceName: '$(AzureConnectionServiceName)'
+              SubscriptionGuid: '$(SubscriptionGuid)'
+              KeyVaultResourceGroup: 'RG-GlobalKeyVault'
+              KeyVaultObjectId: '15e69730-3cca-4ca3-aaa8-81c5155ade6d'
+              sqAdminPassword: 'testpassword'
+              ResourceGroup: '$(ResourceGroup)'
+              HostingPlan: '$(HostingPlan)'
+              Website: '$(Website)'
+              SqlServer: '$(SqlServer)'
+              SqlDb: '$(SqlDb)'
+              SkuSize: '$(SkuSize)'
+              SkuCapacity: '$(SkuCapacity)'
+              SqlAdmin: '$(SqlAdmin)'
+              SqlAdminPassword: '$(SqlAdminPassword)' 
 
-- stage: Test
-  displayName: Test Deployment
+- stage: Production_Installation
+  displayName: Production Installation
   dependsOn: Build
   condition: and(succeeded(), and(eq(variables['System.PullRequest.IsFork'], false),eq(variables['Build.SourceBranch'],'refs/heads/master')))
   jobs:
@@ -85,7 +114,7 @@ stages:
     displayName: 'Deploy Infrastructure'    
     pool:
      vmImage: 'vs2017-win2016'
-    environment: Test
+    environment: Production
     strategy:
       runOnce:
         deploy:
