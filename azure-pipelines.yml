@@ -31,7 +31,7 @@ variables:
 - name: SkuSize
   value: 'S1'
 - name: UniqueString
-  value: '94e4bf888f'
+  value: '94e4bf'
 
 stages:
 - stage: Build
