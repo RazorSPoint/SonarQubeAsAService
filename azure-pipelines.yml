@@ -22,10 +22,14 @@ variables:
   value: 'wa-SonarHosting$(SuffixName)'
 - name: ResourceGroup
   value: 'Rp-SonarQubeAsAService'
+- name: ResourceGroupKeyVault
+  value: 'RG-GlobalKeyVault'  
 - name: SkuCapacity
   value: '1'
 - name: SkuSize
   value: 'S1'
+- name: UniqueString
+  value: '94e4bf888f'
 
 stages:
 - stage: Build
@@ -93,14 +97,14 @@ stages:
             parameters:
               AzureConnectionServiceName: '$(AzureConnectionServiceName)'
               SubscriptionGuid: '$(SubscriptionGuid)'
-              KeyVaultResourceGroup: 'RG-GlobalKeyVault'
-              KeyVaultObjectId: '15e69730-3cca-4ca3-aaa8-81c5155ade6d'
-              sqAdminPassword: 'testpassword'
-              ResourceGroup: '$(ResourceGroup)'
-              HostingPlan: '$(HostingPlan)'
-              Website: '$(Website)'
-              SqlServer: '$(SqlServer)'
-              SqlDb: '$(SqlDb)'
+              KeyVaultResourceGroup: '$(ResourceGroupKeyVault)-$(UniqueString)'
+              KeyVaultObjectId: '$(KeyVaultObjectId)'
+              sqAdminPassword: '$(SonarDefaultAdminPassword)'
+              ResourceGroup: '$(ResourceGroup)-$(UniqueString)'
+              HostingPlan: '$(HostingPlan)-$(UniqueString)'
+              Website: '$(Website)-$(UniqueString)'
+              SqlServer: '$(SqlServer)-$(UniqueString)'
+              SqlDb: '$(SqlDb)-$(UniqueString)'
               SkuSize: '$(SkuSize)'
               SkuCapacity: '$(SkuCapacity)'
               SqlAdmin: '$(SqlAdmin)'
@@ -131,9 +135,9 @@ stages:
             parameters:
               AzureConnectionServiceName: '$(AzureConnectionServiceName)'
               SubscriptionGuid: '$(SubscriptionGuid)'
-              KeyVaultResourceGroup: 'RG-GlobalKeyVault'
-              KeyVaultObjectId: '15e69730-3cca-4ca3-aaa8-81c5155ade6d'
-              sqAdminPassword: 'testpassword'
+              KeyVaultResourceGroup: '$(ResourceGroupKeyVault)'
+              KeyVaultObjectId: '$(KeyVaultObjectId)'
+              sqAdminPassword: '$(SonarDefaultAdminPassword)'
               ResourceGroup: '$(ResourceGroup)'
               HostingPlan: '$(HostingPlan)'
               Website: '$(Website)'
@@ -178,7 +182,7 @@ stages:
               azureSubscription: '$(AzureConnectionServiceName)'
               ScriptType: 'FilePath'
               ScriptPath: '../InstallScripts/Deploy/ConfigureSonar.ps1'
-              ScriptArguments: '-WebAppName "$(Website)" -AdminUser "$(SonarAdmin)" -AadTenantId "$(TenantId)" -AadClientId "$(SonarAppId)" -AadClientSecret "$(SonarAppSecret)"'
+              ScriptArguments: '-WebAppName "$(Website)" -AdminUser "$(SonarSecondaryAadAdmin)" -AadTenantId "$(TenantId)" -AadClientId "$(SonarAppId)" -AadClientSecret "$(SonarAppSecret)"'
               azurePowerShellVersion: 'LatestVersion'
               pwsh: true
           
