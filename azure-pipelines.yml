@@ -77,6 +77,7 @@ stages:
       artifact:  InstallScripts
   - deployment: Test_ARM_Deployment_Phase
     displayName: 'Test ARM Deployment'
+    dependsOn: 'Build_ARM_Phase'
     pool:
       vmImage: 'ubuntu-latest'
     environment: Test ARM Deployment
