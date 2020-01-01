@@ -13,15 +13,15 @@ variables:
 - group: 'SonarQube as a Service'
 
 - name: HostingPlan
-  value: 'asp-SonarHosting$(SuffixName)'
+  value: 'asp-SqHosting$(SuffixName)'
 - name: SqlDb
-  value: 'sqldb-sonarhosting$(SuffixName)'
+  value: 'sqldb-sqhosting$(SuffixName)'
 - name: SqlServer
-  value: 'sqlsrv-sonarhosting$(SuffixName)'
+  value: 'sqlsrv-sqhosting$(SuffixName)'
 - name: Website
-  value: 'wa-SonarHosting$(SuffixName)'
+  value: 'wa-SqHosting$(SuffixName)'
 - name: KeyVault
-  value: 'kv-sonarqubesecrets$(SuffixName)'
+  value: 'kv-sqsecrets$(SuffixName)'
 - name: ResourceGroup
   value: 'Rp-SonarQubeAsAService'
 - name: ResourceGroupKeyVault
