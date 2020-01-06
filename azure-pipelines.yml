@@ -133,22 +133,24 @@ stages:
               SqlAdminPassword: '$(SqlAdminPassword)' 
 
           - task: AzureResourceManagerTemplateDeployment@3
-            displayName: 'Cleanup Resources Group $(RgKeyvault)'
+            displayName: 'Cleanup KeyVault Resources Group'
             inputs:
               deploymentScope: 'Resource Group'
               azureResourceManagerConnection: '$(AzureConnectionServiceName)'
               subscriptionId: '$(SubscriptionGuid)'
               action: 'DeleteRG'
               resourceGroupName: '$(RgKeyvault)'
+              location: 'West Europe'
               
           - task: AzureResourceManagerTemplateDeployment@3
-            displayName: 'Cleanup Resources Group $(RgSonarQube)'
+            displayName: 'Cleanup SonarQube Resources Group'
             inputs:
               deploymentScope: 'Resource Group'
               azureResourceManagerConnection: '$(AzureConnectionServiceName)'
               subscriptionId: '$(SubscriptionGuid)'
               action: 'DeleteRG'
               resourceGroupName: '$(RgSonarQube)'
+              location: 'West Europe'
 
 ### PRODUCTION DEPLOYMENT ###
 #############################
