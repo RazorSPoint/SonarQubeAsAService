@@ -112,6 +112,14 @@ stages:
               SkuCapacity: '$(SkuCapacity)'
               SqlAdmin: '$(SqlAdmin)'
               SqlAdminPassword: '$(SqlAdminPassword)' 
+          - task: AzureResourceManagerTemplateDeployment@3
+            displayName: 'Cleanup Resources'
+            inputs:
+              deploymentScope: 'Resource Group'
+              azureResourceManagerConnection: '$(AzureConnectionServiceName)'
+              subscriptionId: '$(SubscriptionGuid)'
+              action: 'DeleteRG'
+              resourceGroupName: '$(ResourceGroup)'
 
 - stage: Production_Installation
   displayName: Production Installation
