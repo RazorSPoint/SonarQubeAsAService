@@ -93,19 +93,27 @@ stages:
 
   ### Real Test Deployment of Infrastructure ###
   - deployment: Test_ARM_Deployment_Phase
-    displayName: 'Test ARM Deployment'
+    displayName: 'Test ARM Deployment'    
     dependsOn: 'Build_ARM_Phase'
+
     pool:
       vmImage: 'ubuntu-latest'
+
+    variables:
+      RgKeyvault: "$(ResourceGroupKeyVault)-$(SuffixName)$(TestRun)"
+      RgSonarQube: "$(ResourceGroup)-$(SuffixName)$(TestRun)"
+
     environment: Test ARM Deployment
     strategy:
        runOnce:
         deploy:
           steps:
+
           - download: current
             displayName: Download AzureRessources
             artifact: AzureRessources
             patterns: '**/*.json'
+
           - template: Pipeline/deployArm.yml
             parameters:
               AzureConnectionServiceName: '$(AzureConnectionServiceName)'
@@ -123,15 +131,24 @@ stages:
               SkuCapacity: '$(SkuCapacity)'
               SqlAdmin: '$(SqlAdmin)'
               SqlAdminPassword: '$(SqlAdminPassword)' 
+
           - task: AzureResourceManagerTemplateDeployment@3
-            displayName: 'Cleanup Resources'
+            displayName: 'Cleanup Resources Group $(RgKeyvault)'
             inputs:
               deploymentScope: 'Resource Group'
               azureResourceManagerConnection: '$(AzureConnectionServiceName)'
               subscriptionId: '$(SubscriptionGuid)'
               action: 'DeleteRG'
-              resourceGroupName: '$(ResourceGroup)-$(SuffixName)$(TestRun)'
-              location: 'West Europe'
+              resourceGroupName: '$(RgKeyvault)'
+              
+          - task: AzureResourceManagerTemplateDeployment@3
+            displayName: 'Cleanup Resources Group $(RgSonarQube)'
+            inputs:
+              deploymentScope: 'Resource Group'
+              azureResourceManagerConnection: '$(AzureConnectionServiceName)'
+              subscriptionId: '$(SubscriptionGuid)'
+              action: 'DeleteRG'
+              resourceGroupName: '$(RgSonarQube)'
 
 ### PRODUCTION DEPLOYMENT ###
 #############################
