@@ -131,7 +131,6 @@ stages:
               subscriptionId: '$(SubscriptionGuid)'
               action: 'DeleteRG'
               resourceGroupName: '$(ResourceGroup)'
-              location: 'West Europe'
 
 ### PRODUCTION DEPLOYMENT ###
 #############################
