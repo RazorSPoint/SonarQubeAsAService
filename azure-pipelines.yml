@@ -99,11 +99,11 @@ stages:
             parameters:
               AzureConnectionServiceName: '$(AzureConnectionServiceName)'
               SubscriptionGuid: '$(SubscriptionGuid)'
-              KeyVaultResourceGroup: '$(ResourceGroupKeyVault)-$(TestRun)'
+              KeyVaultResourceGroup: '$(ResourceGroupKeyVault)-$(SuffixName)$(TestRun)'
               KeyVaultObjectId: '$(KeyVaultObjectId)'
               sqAdminPassword: '$(SonarDefaultAdminPassword)'
               KeyVault: '$(KeyVault)-$(TestRun)'
-              ResourceGroup: '$(ResourceGroup)-$(TestRun)'
+              ResourceGroup: '$(ResourceGroup)-$(SuffixName)$(TestRun)'
               HostingPlan: '$(HostingPlan)-$(TestRun)'
               Website: '$(Website)-$(TestRun)'
               SqlServer: '$(SqlServer)-$(TestRun)'
