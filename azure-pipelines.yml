@@ -130,7 +130,7 @@ stages:
               azureResourceManagerConnection: '$(AzureConnectionServiceName)'
               subscriptionId: '$(SubscriptionGuid)'
               action: 'DeleteRG'
-              resourceGroupName: '$(ResourceGroup)'
+              resourceGroupName: '$(ResourceGroup)-$(SuffixName)$(TestRun)'
 
 ### PRODUCTION DEPLOYMENT ###
 #############################
