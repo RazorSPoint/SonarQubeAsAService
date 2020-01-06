@@ -30,14 +30,23 @@ variables:
   value: '1'
 - name: SkuSize
   value: 'S1'
+
+# creates a counter based on the suffix name to make sure resources are unique. 
+# This is not 100% safe though.
 - name: TestRun
   value: $[counter(variables['SuffixName'], 0)]
 
 stages:
+
+### BUILD STAGE ###
+###################
+
 - stage: Build
   displayName: Build Stage
-
   jobs:
+
+  ### Check ARM Templates ###
+
   - job: Build_ARM_Phase
     displayName: 'Build ARM'
     pool:
@@ -81,6 +90,8 @@ stages:
     - publish: $(build.artifactstagingdirectory)/InstallScripts
       displayName: 'Publish Deploy and Run Scripts'
       artifact:  InstallScripts
+
+  ### Real Test Deployment of Infrastructure ###
   - deployment: Test_ARM_Deployment_Phase
     displayName: 'Test ARM Deployment'
     dependsOn: 'Build_ARM_Phase'
@@ -112,6 +123,17 @@ stages:
               SkuCapacity: '$(SkuCapacity)'
               SqlAdmin: '$(SqlAdmin)'
               SqlAdminPassword: '$(SqlAdminPassword)' 
+          - task: AzureResourceManagerTemplateDeployment@3
+            displayName: 'Cleanup Resources'
+            inputs:
+              deploymentScope: 'Resource Group'
+              azureResourceManagerConnection: '$(AzureConnectionServiceName)'
+              subscriptionId: '$(SubscriptionGuid)'
+              action: 'DeleteRG'
+              resourceGroupName: '$(ResourceGroup)'
+
+### PRODUCTION DEPLOYMENT ###
+#############################
 
 - stage: Production_Installation
   displayName: Production Installation
