@@ -14,7 +14,7 @@ parameters:
   SkuSize: ''
   SkuCapacity: ''
   SqlAdmin: ''
-  SqlAdminPassword: ''
+  SqlAdminKeyVaultSecret: ''
 
 steps:
   - task: AzureResourceManagerTemplateDeployment@3
@@ -43,5 +43,5 @@ steps:
       templateLocation: 'Linked artifact'
       csmFile: '../AzureRessources/sonar.azuredeploy.json'
       csmParametersFile: '../AzureRessources/sonar.azuredeploy.parameters.json'
-      overrideParameters: '-hostingPlanName "${{parameters.HostingPlan}}" -webSiteName "${{parameters.Website}}" -sqlserverName "${{parameters.SqlServer}}" -databaseName "${{parameters.SqlDb}}" -skuName "${{parameters.SkuSize}}" -skuCapacity "${{parameters.SkuCapacity}}" -sqlAdministratorLogin "${{parameters.SqlAdmin}}" -sqlAdministratorLoginPassword "${{parameters.SqlAdminPassword}}"'
+      overrideParameters: '-hostingPlanName "${{parameters.HostingPlan}}" -webSiteName "${{parameters.Website}}" -sqlserverName "${{parameters.SqlServer}}" -databaseName "${{parameters.SqlDb}}" -skuName "${{parameters.SkuSize}}" -skuCapacity "${{parameters.SkuCapacity}}" -sqlAdministratorLogin "${{parameters.SqlAdmin}}" -sqlAdministratorLoginSecretName "${{parameters.SqlAdminKeyVaultSecret}}"'
       deploymentMode: 'Incremental'

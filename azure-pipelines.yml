@@ -65,7 +65,7 @@ stages:
         templateLocation: 'Linked artifact'
         csmFile: 'ARM/sonar.azuredeploy.json'
         csmParametersFile: 'ARM/sonar.azuredeploy.parameters.json'
-        overrideParameters: '-hostingPlanName "$(HostingPlan)" -webSiteName "$(Website)" -sqlserverName "$(SqlServer)" -databaseName "$(SqlDb)" -skuName "$(SkuSize)" -skuCapacity $(SkuCapacity) -sqlAdministratorLogin "$(SqlAdmin)" -sqlAdministratorLoginPassword "$(SqlAdminPassword)"'
+        overrideParameters: '-hostingPlanName "$(HostingPlan)" -webSiteName "$(Website)" -sqlserverName "$(SqlServer)" -databaseName "$(SqlDb)" -skuName "$(SkuSize)" -skuCapacity $(SkuCapacity) -sqlAdministratorLogin "$(SqlAdmin)" -sqlAdministratorLoginSecretName "$(SqlAdminKeyVaultSecret)"'
         deploymentMode: 'Validation'
 
     - task: CopyFiles@2
@@ -130,7 +130,7 @@ stages:
               SkuSize: '$(SkuSize)'
               SkuCapacity: '$(SkuCapacity)'
               SqlAdmin: '$(SqlAdmin)'
-              SqlAdminPassword: '$(SqlAdminPassword)' 
+              SqlAdminKeyVaultSecret: '$(SqlAdminKeyVaultSecret)' 
 
           - task: AzureResourceManagerTemplateDeployment@3
             displayName: 'Cleanup KeyVault Resources Group'
