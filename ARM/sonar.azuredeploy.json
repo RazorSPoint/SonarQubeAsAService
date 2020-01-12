@@ -26,6 +26,13 @@
                 "description": "The admin user of the SQL Server"
             }
         },
+        "keyVaultName": {
+           "type": "string",
+           "defaultValue": "",
+           "metadata": {
+                "description": "Name of the existing key vault, where the needed passwords are saved."
+            }
+        },
         "skuName": {
             "type": "string",
             "defaultValue": "F1",
@@ -61,7 +68,7 @@
                 "description": "The admin user of the SQL Server"
             }
         },
-        "sqlAdministratorLoginPassword": {
+        "sqlAdministratorLoginSecretName": {
             "type": "securestring",
             "metadata": {
                 "description": "The password of the admin user of the SQL Server"
@@ -97,7 +104,16 @@
         "uniqueHostingPlanName": "[concat(parameters('hostingPlanName'))]",
         "uniqueWebSiteName": "[concat(parameters('webSiteName'))]",
         "uniqueSqlserverName": "[concat(parameters('sqlserverName'))]",
-        "uniqueDatabaseName": "[concat(parameters('databaseName'))]"
+        "uniqueDatabaseName": "[concat(parameters('databaseName'))]",
+        "sqlAdministratorLoginPassword": {
+            "reference": {
+                "keyVault": {
+                    "id": "[concat('/subscriptions/',subscription().id,'/resourceGroups/',resourceGroup().id,'/providers/Microsoft.KeyVault/vaults/',parameters('keyVaultName'))]"
+                },
+                "secretName": "[parameters('sqlAdministratorLoginSecretName')]"
+            }
+        },        
+        "keyVaultSqlSecretResourceId": "[resourceId('Microsoft.KeyVault/vaults/secrets',parameters('keyVaultName'),parameters('sqlAdministratorLoginSecretName'))]"
     },
     "resources": [
         {
@@ -110,7 +126,7 @@
             "apiVersion": "2014-04-01",
             "properties": {
                 "administratorLogin": "[parameters('sqlAdministratorLogin')]",
-                "administratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]",
+                "administratorLoginPassword": "[variables('sqlAdministratorLoginPassword')]",
                 "version": "12.0"
             },
             "resources": [
@@ -215,7 +231,7 @@
                         "SqlServerName": "[variables('uniqueSqlserverName')]",
                         "SqlDatabase": "[variables('uniqueDatabaseName')]",
                         "SqlDatabaseAdmin": "[parameters('sqlAdministratorLogin')]",
-                        "SqlDatabaseAdminPassword": "[parameters('sqlAdministratorLoginPassword')]"
+                        "SqlDatabaseAdminPassword": "[concat('@Microsoft.KeyVault(SecretUri=', reference(variables('keyVaultSqlSecretResourceId')).secretUriWithVersion, ')')]"
                     }
                 }
             ]
