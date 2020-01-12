@@ -23,7 +23,7 @@
         "sqlAdministratorLogin": {
             "value": "## TO BE DEFINED ##"
         },
-        "sqlAdministratorLoginPassword": {
+        "sqlAdministratorLoginSecretName": {
             "value": "## TO BE DEFINED ##"
         }   
     }
