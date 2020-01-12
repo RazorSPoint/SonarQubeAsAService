@@ -10,6 +10,9 @@
         },
         "enabledForTemplateDeployment": {
             "value": true
+        },
+        "sqlAdminSecretName": {
+            "value": "SqlAdminPassword"
         }
     }
 }

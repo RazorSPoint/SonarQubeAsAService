@@ -65,13 +65,25 @@
         "sqAdminSecretName": {
             "type": "string",
             "metadata": {
-                "description": "Name of the secret to store in the vault"
+                "description": "Name of the SonarQube admin secret name to store in the vault"
             }
         },
         "sqAdminPassword": {
             "type": "securestring",
             "metadata": {
-                "description": "Value of the secret to store in the vault"
+                "description": "Value of the SonarQube admin secret to store in the vault"
+            }
+        },
+        "sqlAdminSecretName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the SQL admin secret name to store in the vault"
+            }
+        },
+        "sqlAdminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Value of the SQL admin secret to store in the vault"
             }
         }
     },
@@ -120,6 +132,20 @@
                     },
             "properties": {
                 "value": "[parameters('sqAdminPassword')]"
+            },
+            "dependsOn": [
+                        "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('keyVaultName'),'/',parameters('sqlAdminSecretName'))]",
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2018-02-14",
+            "tags": {
+                        "displayName": "Secret"
+                    },
+            "properties": {
+                "value": "[parameters('sqlAdminPassword')]"
             },
             "dependsOn": [
                         "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"

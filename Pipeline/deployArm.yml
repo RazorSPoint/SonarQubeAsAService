@@ -14,6 +14,7 @@ parameters:
   SkuSize: ''
   SkuCapacity: ''
   SqlAdmin: ''
+  SqlAdminPassword: ''
   SqlAdminKeyVaultSecret: ''
 
 steps:
@@ -29,7 +30,7 @@ steps:
       templateLocation: 'Linked artifact'
       csmFile: '../AzureRessources/keyvault.azuredeploy.json'
       csmParametersFile: '../AzureRessources/keyvault.azuredeploy.parameters.json'
-      overrideParameters: '-objectId "${{parameters.KeyVaultObjectId}}" -sqAdminPassword "${{parameters.sqAdminPassword}}" -keyVaultName ${{parameters.KeyVault}}'
+      overrideParameters: '-objectId "${{parameters.KeyVaultObjectId}}" -sqAdminPassword "${{parameters.sqAdminPassword}}" -keyVaultName ${{parameters.KeyVault}} -sqlAdminPassword ${{parameters.SqlAdminPassword}}'
       deploymentMode: 'Incremental'
   - task: AzureResourceManagerTemplateDeployment@3
     displayName: "Deploy Infrastructure"
